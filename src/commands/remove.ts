@@ -9,8 +9,8 @@ export async function removeCommand(ctx: CommandContext, serverName?: string): P
   const store = new ConfigStore(ctx.projectRoot);
 
   if (!store.exists()) {
-    p.log.warn('Nenhum .mcpx.json encontrado neste diretorio.');
-    p.log.info('Execute "mcpx init" para criar uma configuracao.');
+    p.log.warn('No .mcpx.json found in this directory.');
+    p.log.info('Run "mcpx init" to create a configuration.');
     return;
   }
 
@@ -18,7 +18,7 @@ export async function removeCommand(ctx: CommandContext, serverName?: string): P
   const serverNames = Object.keys(config.servers);
 
   if (serverNames.length === 0) {
-    p.log.info('Nenhum servidor MCP configurado.');
+    p.log.info('No MCP servers configured.');
     return;
   }
 
@@ -29,7 +29,7 @@ export async function removeCommand(ctx: CommandContext, serverName?: string): P
   } else {
     const selected = handleCancel(
       await p.select({
-        message: 'Qual servidor deseja remover?',
+        message: 'Which server do you want to remove?',
         options: serverNames.map((n) => ({ value: n, label: n })),
       }),
     );
@@ -38,15 +38,15 @@ export async function removeCommand(ctx: CommandContext, serverName?: string): P
   }
 
   const confirmed = handleCancel(
-    await p.confirm({ message: `Confirma remover o servidor "${name}"?`, initialValue: false }),
+    await p.confirm({ message: `Confirm removal of server "${name}"?`, initialValue: false }),
   );
   if (confirmed === BACK || !confirmed) {
-    p.cancel('Operacao cancelada.');
+    p.cancel('Operation canceled.');
     return;
   }
 
   const updatedConfig = store.removeServer(name);
-  p.log.success(`Servidor "${name}" removido.`);
+  p.log.success(`Server "${name}" removed.`);
 
   const registry = createRegistry();
   const providers = registry.getByNames(updatedConfig.providers);
@@ -56,7 +56,7 @@ export async function removeCommand(ctx: CommandContext, serverName?: string): P
     if (r.status === 'error') {
       p.log.error(`${r.filePath}: ${r.error}`);
     } else if (r.status !== 'unchanged') {
-      p.log.success(`Atualizado: ${r.filePath}`);
+      p.log.success(`Updated: ${r.filePath}`);
     }
   }
 }

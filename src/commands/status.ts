@@ -9,8 +9,8 @@ export async function statusCommand(ctx: CommandContext): Promise<void> {
   const store = new ConfigStore(ctx.projectRoot);
 
   if (!store.exists()) {
-    p.log.warn('Nenhum .mcpx.json encontrado neste diretorio.');
-    p.log.info('Execute "mcpx init" para criar uma configuracao.');
+    p.log.warn('No .mcpx.json found in this directory.');
+    p.log.info('Run "mcpx init" to create a configuration.');
     return;
   }
 
@@ -34,7 +34,7 @@ export async function statusCommand(ctx: CommandContext): Promise<void> {
 
     let status: string;
     if (!fileExists(filePath)) {
-      status = pc.red('ausente');
+      status = pc.red('missing');
       hasDesync = true;
     } else {
       const currentContent = readTextFile(filePath);
@@ -51,12 +51,12 @@ export async function statusCommand(ctx: CommandContext): Promise<void> {
 
   p.note(
     lines.join('\n'),
-    `${serverCount} servidor(es), ${config.providers.length} provider(s)`,
+    `${serverCount} server(s), ${config.providers.length} provider(s)`,
   );
 
   if (hasDesync) {
-    p.log.warn('Alguns providers estao desatualizados. Execute "mcpx sync" para atualizar.');
+    p.log.warn('Some providers are out of date. Run "mcpx sync" to update them.');
   } else {
-    p.log.success('Todos os providers estao sincronizados.');
+    p.log.success('All providers are synchronized.');
   }
 }

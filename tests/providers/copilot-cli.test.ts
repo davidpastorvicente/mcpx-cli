@@ -5,7 +5,7 @@ import type { McpServerConfig } from '../../src/types/canonical.js';
 describe('CopilotCliProvider', () => {
   const provider = new CopilotCliProvider();
 
-  it('deve gerar JSON com mcpServers sem campo type', () => {
+  it('should generate JSON with mcpServers and no type field', () => {
     const servers: Record<string, McpServerConfig> = {
       github: {
         transport: 'stdio',
@@ -26,7 +26,7 @@ describe('CopilotCliProvider', () => {
     });
   });
 
-  it('deve fazer parse de JSON do Copilot CLI', () => {
+  it('should parse Copilot CLI JSON', () => {
     const input = JSON.stringify({
       mcpServers: {
         test: {
@@ -44,7 +44,7 @@ describe('CopilotCliProvider', () => {
     expect(result['test']?.args).toContain('--rm');
   });
 
-  it('deve incluir cwd quando definido', () => {
+  it('should include cwd when defined', () => {
     const servers: Record<string, McpServerConfig> = {
       test: {
         transport: 'stdio',
@@ -61,7 +61,7 @@ describe('CopilotCliProvider', () => {
     expect(parsed.mcpServers.test.tools).toEqual(['*']);
   });
 
-  it('deve ser provider de projeto', () => {
+  it('should be a project-scoped provider', () => {
     expect(provider.config.supportsProjectConfig).toBe(true);
     expect(provider.config.configPath).toBe('.copilot/mcp-config.json');
   });

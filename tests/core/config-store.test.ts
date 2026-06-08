@@ -17,11 +17,11 @@ describe('ConfigStore', () => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
-  it('deve retornar false quando nao existe config', () => {
+  it('should return false when config does not exist', () => {
     expect(store.exists()).toBe(false);
   });
 
-  it('deve criar config vazia', () => {
+  it('should create an empty config', () => {
     const config = store.createEmpty(['claude-code']);
     expect(config.version).toBe(1);
     expect(config.providers).toEqual(['claude-code']);
@@ -29,7 +29,7 @@ describe('ConfigStore', () => {
     expect(store.exists()).toBe(true);
   });
 
-  it('deve adicionar e remover servidor', () => {
+  it('should add and remove a server', () => {
     store.createEmpty([]);
 
     store.addServer('test', {
@@ -46,7 +46,7 @@ describe('ConfigStore', () => {
     expect(config.servers['test']).toBeUndefined();
   });
 
-  it('deve atualizar providers', () => {
+  it('should update providers', () => {
     store.createEmpty([]);
     store.setProviders(['claude-code', 'gemini-cli']);
 
@@ -54,7 +54,7 @@ describe('ConfigStore', () => {
     expect(config.providers).toEqual(['claude-code', 'gemini-cli']);
   });
 
-  it('deve lançar erro para config invalida', () => {
+  it('should throw for invalid config', () => {
     const configPath = path.join(tmpDir, '.mcpx.json');
     fs.writeFileSync(configPath, JSON.stringify({ invalid: true }));
 

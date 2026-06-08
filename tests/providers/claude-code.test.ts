@@ -20,7 +20,7 @@ describe('ClaudeCodeProvider', () => {
     },
   };
 
-  it('deve gerar JSON com mcpServers e type stdio', () => {
+  it('should generate JSON with mcpServers and stdio type', () => {
     const output = provider.generate(servers);
     const parsed = JSON.parse(output);
 
@@ -34,7 +34,7 @@ describe('ClaudeCodeProvider', () => {
     expect(parsed.mcpServers['github-tvx'].type).toBe('stdio');
   });
 
-  it('deve ignorar servidores desabilitados', () => {
+  it('should ignore disabled servers', () => {
     const output = provider.generate({
       disabled: { transport: 'stdio', command: 'test', enabled: false },
       enabled: { transport: 'stdio', command: 'test' },
@@ -45,7 +45,7 @@ describe('ClaudeCodeProvider', () => {
     expect(parsed.mcpServers['enabled']).toBeDefined();
   });
 
-  it('deve fazer parse de JSON do Claude Code', () => {
+  it('should parse Claude Code JSON', () => {
     const input = JSON.stringify({
       mcpServers: {
         test: {
@@ -67,7 +67,7 @@ describe('ClaudeCodeProvider', () => {
     });
   });
 
-  it('deve gerar e parsear de volta com o mesmo resultado (roundtrip)', () => {
+  it('should roundtrip generate -> parse with the same result', () => {
     const generated = provider.generate(servers);
     const parsed = provider.parse(generated);
 
@@ -76,7 +76,7 @@ describe('ClaudeCodeProvider', () => {
     expect(parsed['jira-tvx']?.transport).toBe('stdio');
   });
 
-  it('deve suportar transporte http', () => {
+  it('should support http transport', () => {
     const httpServers: Record<string, McpServerConfig> = {
       remote: {
         transport: 'http',

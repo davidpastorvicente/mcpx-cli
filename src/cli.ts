@@ -13,10 +13,10 @@ export function createCli(): Command {
 
   program
     .name('mcpx')
-    .description('CLI para configurar servidores MCP para multiplos providers de IA')
+    .description('CLI for configuring MCP servers across multiple AI providers')
     .version('0.1.0')
-    .option('-d, --dir <path>', 'Diretorio do projeto', process.cwd())
-    .option('--verbose', 'Exibe logs detalhados', false);
+    .option('-d, --dir <path>', 'Project directory', process.cwd())
+    .option('--verbose', 'Show detailed logs', false);
 
   function getContext(): CommandContext {
     const opts = program.opts();
@@ -28,43 +28,43 @@ export function createCli(): Command {
 
   program
     .command('init')
-    .description('Wizard interativo para configuracao inicial')
+    .description('Interactive setup wizard')
     .action(() => initCommand(getContext()));
 
   program
     .command('add')
-    .description('Adiciona um servidor MCP')
-    .argument('[name]', 'Nome do servidor')
+    .description('Add an MCP server')
+    .argument('[name]', 'Server name')
     .action((name?: string) => addCommand(getContext(), name));
 
   program
     .command('remove')
-    .description('Remove um servidor MCP')
-    .argument('[name]', 'Nome do servidor')
+    .description('Remove an MCP server')
+    .argument('[name]', 'Server name')
     .action((name?: string) => removeCommand(getContext(), name));
 
   program
     .command('list')
-    .description('Lista servidores MCP configurados')
+    .description('List configured MCP servers')
     .action(() => listCommand(getContext()));
 
   program
     .command('sync')
-    .description('Regenera arquivos de configuracao dos providers')
+    .description('Regenerate provider configuration files')
     .action(() => syncCommand(getContext()));
 
   program
     .command('import')
-    .description('Importa configuracao de um provider existente')
-    .argument('[provider]', 'Nome do provider')
+    .description('Import configuration from an existing provider')
+    .argument('[provider]', 'Provider name')
     .action((provider?: string) => importCommand(getContext(), provider));
 
   program
     .command('status')
-    .description('Mostra estado de sincronia dos providers')
+    .description('Show provider sync status')
     .action(() => statusCommand(getContext()));
 
-  // Comando padrao: init
+  // Default command: init
   program.action(() => initCommand(getContext()));
 
   return program;

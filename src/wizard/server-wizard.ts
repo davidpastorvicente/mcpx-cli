@@ -23,14 +23,14 @@ export async function runServerWizard(existingNames: string[] = []): Promise<Ser
   const stepName: Step<ServerState> = async () => {
     const result = handleCancel(
       await p.text({
-        message: 'Nome do servidor MCP',
+        message: 'MCP server name',
         placeholder: 'ex: github, jira, my-server',
         validate: (v) => {
           const value = v?.trim() ?? '';
-          if (!value) return 'Nome obrigatorio';
+          if (!value) return 'Name is required';
           if (!isValidServerName(value))
-            return 'Use letras, numeros, pontos, hifens ou underscores';
-          if (existingNames.includes(value)) return `"${value}" ja existe`;
+            return 'Use letters, numbers, dots, hyphens, or underscores';
+          if (existingNames.includes(value)) return `"${value}" already exists`;
         },
       }),
     );
@@ -41,10 +41,10 @@ export async function runServerWizard(existingNames: string[] = []): Promise<Ser
   const stepTransport: Step<ServerState> = async () => {
     const result = handleCancel(
       await p.select({
-        message: 'Tipo de transporte',
+        message: 'Transport type',
         options: [
-          { value: 'stdio' as const, label: 'stdio', hint: 'comando local' },
-          { value: 'http' as const, label: 'http', hint: 'servidor remoto' },
+          { value: 'stdio' as const, label: 'stdio', hint: 'local command' },
+          { value: 'http' as const, label: 'http', hint: 'remote server' },
         ],
       }),
     );
@@ -56,14 +56,14 @@ export async function runServerWizard(existingNames: string[] = []): Promise<Ser
     if (state.transport !== 'stdio') return {};
 
     const cmd = handleCancel(
-      await p.text({ message: 'Comando', placeholder: 'ex: npx, uvx, docker' }),
+      await p.text({ message: 'Command', placeholder: 'ex: npx, uvx, docker' }),
     );
     if (cmd === BACK) return BACK;
 
     const argsStr = handleCancel(
       await p.text({
-        message: 'Argumentos',
-        placeholder: 'separados por virgula, vazio para nenhum',
+        message: 'Arguments',
+        placeholder: 'comma-separated, leave empty for none',
         initialValue: '',
       }),
     );
@@ -82,7 +82,7 @@ export async function runServerWizard(existingNames: string[] = []): Promise<Ser
 
     const env: Record<string, string> = {};
     const shouldAdd = handleCancel(
-      await p.confirm({ message: 'Adicionar variaveis de ambiente?', initialValue: false }),
+      await p.confirm({ message: 'Add environment variables?', initialValue: false }),
     );
     if (shouldAdd === BACK) return BACK;
 
@@ -90,19 +90,19 @@ export async function runServerWizard(existingNames: string[] = []): Promise<Ser
       let addMore = true;
       while (addMore) {
         const key = handleCancel(
-          await p.text({ message: 'Nome da variavel', placeholder: 'ex: API_KEY' }),
+          await p.text({ message: 'Variable name', placeholder: 'ex: API_KEY' }),
         );
         if (key === BACK) break;
 
         const value = handleCancel(
-          await p.text({ message: `Valor de ${key}` }),
+          await p.text({ message: `Value for ${key}` }),
         );
         if (value === BACK) break;
 
         env[key as string] = value as string;
 
         const more = handleCancel(
-          await p.confirm({ message: 'Adicionar outra variavel?', initialValue: false }),
+          await p.confirm({ message: 'Add another variable?', initialValue: false }),
         );
         if (more === BACK) break;
         addMore = more as boolean;
@@ -116,7 +116,7 @@ export async function runServerWizard(existingNames: string[] = []): Promise<Ser
     if (state.transport !== 'http') return {};
 
     const url = handleCancel(
-      await p.text({ message: 'URL do servidor', placeholder: 'https://mcp.example.com/api' }),
+      await p.text({ message: 'Server URL', placeholder: 'https://mcp.example.com/api' }),
     );
     if (url === BACK) return BACK;
     return { url: url as string };
@@ -127,7 +127,7 @@ export async function runServerWizard(existingNames: string[] = []): Promise<Ser
 
     const headers: Record<string, string> = {};
     const shouldAdd = handleCancel(
-      await p.confirm({ message: 'Adicionar headers?', initialValue: false }),
+      await p.confirm({ message: 'Add headers?', initialValue: false }),
     );
     if (shouldAdd === BACK) return BACK;
 
@@ -135,19 +135,19 @@ export async function runServerWizard(existingNames: string[] = []): Promise<Ser
       let addMore = true;
       while (addMore) {
         const key = handleCancel(
-          await p.text({ message: 'Nome do header', placeholder: 'ex: Authorization' }),
+          await p.text({ message: 'Header name', placeholder: 'ex: Authorization' }),
         );
         if (key === BACK) break;
 
         const value = handleCancel(
-          await p.text({ message: `Valor de ${key}` }),
+          await p.text({ message: `Value for ${key}` }),
         );
         if (value === BACK) break;
 
         headers[key as string] = value as string;
 
         const more = handleCancel(
-          await p.confirm({ message: 'Adicionar outro header?', initialValue: false }),
+          await p.confirm({ message: 'Add another header?', initialValue: false }),
         );
         if (more === BACK) break;
         addMore = more as boolean;
@@ -159,7 +159,7 @@ export async function runServerWizard(existingNames: string[] = []): Promise<Ser
 
   const stepDescription: Step<ServerState> = async () => {
     const desc = handleCancel(
-      await p.text({ message: 'Descricao (opcional)', initialValue: '', placeholder: 'breve descricao do servidor' }),
+      await p.text({ message: 'Description (optional)', initialValue: '', placeholder: 'short server description' }),
     );
     if (desc === BACK) return BACK;
     return { description: desc as string };

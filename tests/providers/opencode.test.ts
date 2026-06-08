@@ -5,7 +5,7 @@ import type { McpServerConfig } from '../../src/types/canonical.js';
 describe('OpenCodeProvider', () => {
   const provider = new OpenCodeProvider();
 
-  it('deve gerar JSON com command como array e environment', () => {
+  it('should generate JSON with command as an array and environment', () => {
     const servers: Record<string, McpServerConfig> = {
       test: {
         transport: 'stdio',
@@ -27,7 +27,7 @@ describe('OpenCodeProvider', () => {
     });
   });
 
-  it('deve fazer parse separando command array em command + args', () => {
+  it('should parse by splitting command array into command + args', () => {
     const input = JSON.stringify({
       $schema: 'https://opencode.ai/config.json',
       mcp: {
@@ -48,7 +48,7 @@ describe('OpenCodeProvider', () => {
     expect(result['test']?.transport).toBe('stdio');
   });
 
-  it('deve suportar tipo remote como http', () => {
+  it('should support remote type as http', () => {
     const servers: Record<string, McpServerConfig> = {
       remote: {
         transport: 'http',

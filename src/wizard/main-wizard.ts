@@ -13,7 +13,7 @@ export async function runMainWizard(projectRoot: string): Promise<void> {
   const store = new ConfigStore(projectRoot);
   const registry = createRegistry();
 
-  p.intro('MCPX - Configuracao de servidores MCP');
+  p.intro('MCPX - MCP server configuration');
 
   if (store.exists()) {
     await handleExistingConfig(store, registry, projectRoot);
@@ -31,23 +31,23 @@ async function handleExistingConfig(
   const config = store.load();
   const serverCount = Object.keys(config.servers).length;
 
-  p.log.info(`Configuracao encontrada: ${serverCount} servidor(es), ${config.providers.length} provider(s)`);
+  p.log.info(`Configuration found: ${serverCount} server(s), ${config.providers.length} provider(s)`);
 
   const action = handleCancel(
     await p.select({
       message: 'O que deseja fazer?',
       options: [
-        { value: 'add', label: 'Adicionar servidor' },
-        { value: 'remove', label: 'Remover servidor' },
-        { value: 'providers', label: 'Alterar providers' },
-        { value: 'sync', label: 'Sincronizar configs' },
-        { value: 'exit', label: 'Sair' },
+        { value: 'add', label: 'Add server' },
+        { value: 'remove', label: 'Remove server' },
+        { value: 'providers', label: 'Change providers' },
+        { value: 'sync', label: 'Sync configs' },
+        { value: 'exit', label: 'Exit' },
       ],
     }),
   );
 
   if (action === BACK) {
-    p.outro('Ate mais!');
+    p.outro('See you later!');
     return;
   }
 
@@ -56,11 +56,11 @@ async function handleExistingConfig(
       const existingNames = Object.keys(config.servers);
       const result = await runServerWizard(existingNames);
       if (!result) {
-        p.cancel('Operacao cancelada.');
+        p.cancel('Operation canceled.');
         break;
       }
       store.addServer(result.name, result.config);
-      p.log.success(`Servidor "${result.name}" adicionado.`);
+      p.log.success(`Server "${result.name}" added.`);
 
       const updatedConfig = store.load();
       const providers = registry.getByNames(updatedConfig.providers);
@@ -71,24 +71,24 @@ async function handleExistingConfig(
     case 'remove': {
       const names = Object.keys(config.servers);
       if (names.length === 0) {
-        p.log.info('Nenhum servidor para remover.');
+        p.log.info('No servers to remove.');
         break;
       }
       const toRemove = handleCancel(
         await p.select({
-          message: 'Qual servidor remover?',
+          message: 'Which server should be removed?',
           options: names.map((n) => ({ value: n, label: n })),
         }),
       );
       if (toRemove === BACK) break;
 
       const doConfirm = handleCancel(
-        await p.confirm({ message: `Confirma remover "${toRemove}"?`, initialValue: false }),
+        await p.confirm({ message: `Confirm removal of "${toRemove}"?`, initialValue: false }),
       );
       if (doConfirm === BACK || !doConfirm) break;
 
       store.removeServer(toRemove);
-      p.log.success(`Servidor "${toRemove}" removido.`);
+      p.log.success(`Server "${toRemove}" removed.`);
 
       const updatedConfig = store.load();
       const providers = registry.getByNames(updatedConfig.providers);
@@ -104,7 +104,7 @@ async function handleExistingConfig(
       const removedProviders = registry.getByNames(removedNames);
 
       store.setProviders(newProviders);
-      p.log.success('Providers atualizados.');
+      p.log.success('Providers updated.');
 
       if (removedProviders.length > 0) {
         const cleanupResults = cleanupRemovedProviders(removedProviders, projectRoot);
@@ -124,7 +124,7 @@ async function handleExistingConfig(
       break;
     }
     case 'exit':
-      p.outro('Ate mais!');
+      p.outro('See you later!');
       break;
   }
 }
@@ -142,16 +142,16 @@ async function handleNewConfig(
   if (detections.length > 0) {
     const lines = detections.map((det) => {
       const provider = registry.get(det.provider);
-      return `${provider?.config.displayName ?? det.provider} - ${det.servers.length} servidor(es)`;
+      return `${provider?.config.displayName ?? det.provider} - ${det.servers.length} server(s)`;
     });
-    p.note(lines.join('\n'), 'Configuracoes MCP detectadas');
+    p.note(lines.join('\n'), 'Detected MCP configurations');
 
     const doImport = handleCancel(
-      await p.confirm({ message: 'Deseja importar essas configuracoes?', initialValue: true }),
+      await p.confirm({ message: 'Import these configurations?', initialValue: true }),
     );
 
     if (doImport === BACK) {
-      p.cancel('Operacao cancelada.');
+      p.cancel('Operation canceled.');
       return;
     }
 
@@ -164,31 +164,31 @@ async function handleNewConfig(
           const parsed = provider.parse(content);
           servers = { ...servers, ...parsed };
         } catch {
-          // ignora erros de parse
+          // Ignore parse errors.
         }
       }
-      p.log.success(`${Object.keys(servers).length} servidor(es) importado(s).`);
+      p.log.success(`Imported ${Object.keys(servers).length} server(s).`);
     }
   }
 
   if (Object.keys(servers).length === 0) {
-    p.log.step('Vamos configurar seus servidores MCP.');
+    p.log.step('Let\'s configure your MCP servers.');
 
     let addMore = true;
     while (addMore) {
       const result = await runServerWizard(Object.keys(servers));
       if (!result) {
         if (Object.keys(servers).length === 0) {
-          p.cancel('Operacao cancelada.');
+          p.cancel('Operation canceled.');
           return;
         }
         break;
       }
       servers[result.name] = result.config;
-      p.log.success(`Servidor "${result.name}" adicionado.`);
+      p.log.success(`Server "${result.name}" added.`);
 
       const more = handleCancel(
-        await p.confirm({ message: 'Adicionar outro servidor?', initialValue: false }),
+        await p.confirm({ message: 'Add another server?', initialValue: false }),
       );
       if (more === BACK) break;
       addMore = more as boolean;
@@ -197,29 +197,29 @@ async function handleNewConfig(
 
   const providers = await runProviderWizard();
   if (providers === BACK) {
-    p.cancel('Operacao cancelada.');
+    p.cancel('Operation canceled.');
     return;
   }
 
   if (providers.length === 0) {
-    p.log.warn('Nenhum provider selecionado.');
+    p.log.warn('No providers selected.');
   }
 
   const serverList = Object.keys(servers).join(', ');
-  const providerList = providers.map((pn) => registry.get(pn)?.config.displayName ?? pn).join(', ') || 'nenhum';
-  p.note(`Servidores: ${serverList}\nProviders: ${providerList}`, 'Resumo');
+  const providerList = providers.map((pn) => registry.get(pn)?.config.displayName ?? pn).join(', ') || 'none';
+  p.note(`Servers: ${serverList}\nProviders: ${providerList}`, 'Summary');
 
   const doConfirm = handleCancel(
-    await p.confirm({ message: 'Confirmar e gerar arquivos?', initialValue: true }),
+    await p.confirm({ message: 'Confirm and generate files?', initialValue: true }),
   );
 
   if (doConfirm === BACK || !doConfirm) {
-    p.cancel('Operacao cancelada.');
+    p.cancel('Operation canceled.');
     return;
   }
 
   store.save({ version: 1, providers, servers });
-  p.log.success('Criado: .mcpx.json');
+  p.log.success('Created: .mcpx.json');
 
   if (providers.length > 0) {
     const providerInstances = registry.getByNames(providers);
@@ -227,7 +227,7 @@ async function handleNewConfig(
     printSyncResults(results);
   }
 
-  p.outro('Configuracao concluida!');
+  p.outro('Configuration complete!');
 }
 
 function printSyncResults(
@@ -236,13 +236,13 @@ function printSyncResults(
   for (const result of results) {
     switch (result.status) {
       case 'created':
-        p.log.success(`Criado: ${result.filePath}`);
+        p.log.success(`Created: ${result.filePath}`);
         break;
       case 'updated':
-        p.log.success(`Atualizado: ${result.filePath}`);
+        p.log.success(`Updated: ${result.filePath}`);
         break;
       case 'deleted':
-        p.log.warn(`Removido: ${result.filePath}`);
+        p.log.warn(`Removed: ${result.filePath}`);
         break;
       case 'error':
         p.log.error(`${result.filePath}: ${result.error}`);
@@ -252,7 +252,7 @@ function printSyncResults(
 
   if (results.some((r) => r.provider === 'copilot-cli' && r.status !== 'error')) {
     if (ensureShellAlias('copilot', 'copilot --additional-mcp-config @.copilot/mcp-config.json')) {
-      p.log.success('Alias "copilot" configurado no shell (execute "source ~/.zshrc" ou reinicie o terminal).');
+      p.log.success('Configured the "copilot" shell alias (run "source ~/.zshrc" or restart the terminal).');
     }
   }
 }

@@ -9,8 +9,8 @@ export async function syncCommand(ctx: CommandContext): Promise<void> {
   const store = new ConfigStore(ctx.projectRoot);
 
   if (!store.exists()) {
-    p.log.warn('Nenhum .mcpx.json encontrado neste diretorio.');
-    p.log.info('Execute "mcpx init" para criar uma configuracao.');
+    p.log.warn('No .mcpx.json found in this directory.');
+    p.log.info('Run "mcpx init" to create a configuration.');
     return;
   }
 
@@ -19,16 +19,16 @@ export async function syncCommand(ctx: CommandContext): Promise<void> {
   const providers = registry.getByNames(config.providers);
 
   if (providers.length === 0) {
-    p.log.warn('Nenhum provider configurado.');
+    p.log.warn('No providers configured.');
     return;
   }
 
   const sp = p.spinner();
-  sp.start('Sincronizando configuracoes...');
+  sp.start('Syncing configurations...');
 
   const results = syncAllProviders(providers, ctx.projectRoot, config.servers);
 
-  sp.stop('Sincronizacao concluida.');
+  sp.stop('Sync complete.');
 
   let updated = 0;
   let created = 0;
@@ -39,19 +39,19 @@ export async function syncCommand(ctx: CommandContext): Promise<void> {
   for (const result of results) {
     switch (result.status) {
       case 'created':
-        p.log.success(`${result.filePath} (criado)`);
+        p.log.success(`${result.filePath} (created)`);
         created++;
         break;
       case 'updated':
-        p.log.success(`${result.filePath} (atualizado)`);
+        p.log.success(`${result.filePath} (updated)`);
         updated++;
         break;
       case 'unchanged':
-        p.log.step(`${result.filePath} (sem alteracoes)`);
+        p.log.step(`${result.filePath} (unchanged)`);
         unchanged++;
         break;
       case 'deleted':
-        p.log.warn(`${result.filePath} (removido)`);
+        p.log.warn(`${result.filePath} (removed)`);
         deleted++;
         break;
       case 'error':
@@ -62,17 +62,17 @@ export async function syncCommand(ctx: CommandContext): Promise<void> {
   }
 
   const parts: string[] = [];
-  if (created > 0) parts.push(`${created} criado(s)`);
-  if (updated > 0) parts.push(`${updated} atualizado(s)`);
-  if (deleted > 0) parts.push(`${deleted} removido(s)`);
-  if (unchanged > 0) parts.push(`${unchanged} sem alteracoes`);
-  if (errors > 0) parts.push(`${errors} erro(s)`);
+  if (created > 0) parts.push(`${created} created`);
+  if (updated > 0) parts.push(`${updated} updated`);
+  if (deleted > 0) parts.push(`${deleted} removed`);
+  if (unchanged > 0) parts.push(`${unchanged} unchanged`);
+  if (errors > 0) parts.push(`${errors} errors`);
 
-  p.log.info(`${results.length} providers processados (${parts.join(', ')})`);
+  p.log.info(`${results.length} providers processed (${parts.join(', ')})`);
 
   if (config.providers.includes('copilot-cli')) {
     if (ensureShellAlias('copilot', 'copilot --additional-mcp-config @.copilot/mcp-config.json')) {
-      p.log.success('Alias "copilot" configurado no shell (execute "source ~/.zshrc" ou reinicie o terminal).');
+      p.log.success('Configured the "copilot" shell alias (run "source ~/.zshrc" or restart the terminal).');
     }
   }
 }

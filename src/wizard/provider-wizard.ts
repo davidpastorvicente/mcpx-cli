@@ -22,7 +22,7 @@ export async function runProviderWizard(
 
   const result = handleCancel(
     await p.multiselect({
-      message: 'Selecione os providers para gerar configuracao',
+      message: 'Select the providers to generate configuration for',
       options: PROVIDER_NAMES.map((name) => {
         const provider = registry.get(name);
         const details = PROVIDER_DETAILS[name];

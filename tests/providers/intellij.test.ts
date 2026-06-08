@@ -20,7 +20,7 @@ describe('IntellijProvider', () => {
     },
   };
 
-  it('deve gerar JSON com mcpServers sem campo type', () => {
+  it('should generate JSON with mcpServers and no type field', () => {
     const output = provider.generate(servers);
     const parsed = JSON.parse(output);
 
@@ -33,7 +33,7 @@ describe('IntellijProvider', () => {
     expect(parsed.mcpServers['jira-tvx'].type).toBeUndefined();
   });
 
-  it('deve ignorar servidores desabilitados', () => {
+  it('should ignore disabled servers', () => {
     const output = provider.generate({
       disabled: { transport: 'stdio', command: 'test', enabled: false },
       enabled: { transport: 'stdio', command: 'test' },
@@ -44,7 +44,7 @@ describe('IntellijProvider', () => {
     expect(parsed.mcpServers['enabled']).toBeDefined();
   });
 
-  it('deve suportar transporte http', () => {
+  it('should support http transport', () => {
     const httpServers: Record<string, McpServerConfig> = {
       remote: {
         transport: 'http',
@@ -62,7 +62,7 @@ describe('IntellijProvider', () => {
     });
   });
 
-  it('deve fazer parse inferindo transporte pela presenca de url', () => {
+  it('should infer transport during parse based on the presence of url', () => {
     const input = JSON.stringify({
       mcpServers: {
         local: {
@@ -84,7 +84,7 @@ describe('IntellijProvider', () => {
     expect(result['remote']?.url).toBe('https://mcp.example.com');
   });
 
-  it('deve gerar e parsear de volta com o mesmo resultado (roundtrip)', () => {
+  it('should roundtrip generate -> parse with the same result', () => {
     const generated = provider.generate(servers);
     const parsed = provider.parse(generated);
 
@@ -93,7 +93,7 @@ describe('IntellijProvider', () => {
     expect(parsed['jira-tvx']?.transport).toBe('stdio');
   });
 
-  it('deve ser provider de projeto com configPath correto', () => {
+  it('should be a project-scoped provider with the correct configPath', () => {
     expect(provider.config.supportsProjectConfig).toBe(true);
     expect(provider.config.configPath).toBe('.idea/mcp.json');
   });

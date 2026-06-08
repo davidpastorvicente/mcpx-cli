@@ -244,7 +244,7 @@ Use the interactive wizard to add or remove providers:
 
 ```bash
 mcpx init
-# Select "Alterar providers"
+# Select "Change providers"
 ```
 
 When a provider is **removed**, MCPX **deletes** the corresponding config file. For global providers, legacy project-level files are also cleaned up.
@@ -338,9 +338,3 @@ npm run typecheck
 ## 📄 License
 
 MIT
-
----
-
-<p align="center">
-  <i><a href="./README.pt-BR.md">🇧🇷 Leia em Português (pt-BR)</a></i>
-</p>

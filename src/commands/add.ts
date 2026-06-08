@@ -9,8 +9,8 @@ export async function addCommand(ctx: CommandContext, serverName?: string): Prom
   const store = new ConfigStore(ctx.projectRoot);
 
   if (!store.exists()) {
-    p.log.warn('Nenhum .mcpx.json encontrado neste diretorio.');
-    p.log.info('Execute "mcpx init" para criar uma configuracao.');
+    p.log.warn('No .mcpx.json found in this directory.');
+    p.log.info('Run "mcpx init" to create a configuration.');
     return;
   }
 
@@ -18,18 +18,18 @@ export async function addCommand(ctx: CommandContext, serverName?: string): Prom
   const existingNames = Object.keys(config.servers);
 
   if (serverName && config.servers[serverName]) {
-    p.log.warn(`Servidor "${serverName}" ja existe. Use outro nome.`);
+    p.log.warn(`Server "${serverName}" already exists. Use another name.`);
     return;
   }
 
   const result = await runServerWizard(existingNames);
   if (!result) {
-    p.cancel('Operacao cancelada.');
+    p.cancel('Operation canceled.');
     return;
   }
 
   const updatedConfig = store.addServer(result.name, result.config);
-  p.log.success(`Servidor "${result.name}" adicionado ao .mcpx.json`);
+  p.log.success(`Server "${result.name}" added to .mcpx.json`);
 
   const registry = createRegistry();
   const providers = registry.getByNames(updatedConfig.providers);
@@ -39,7 +39,7 @@ export async function addCommand(ctx: CommandContext, serverName?: string): Prom
     if (r.status === 'error') {
       p.log.error(`${r.filePath}: ${r.error}`);
     } else if (r.status !== 'unchanged') {
-      p.log.success(`Atualizado: ${r.filePath}`);
+      p.log.success(`Updated: ${r.filePath}`);
     }
   }
 }

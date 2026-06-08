@@ -1,7 +1,7 @@
 {
   "name": "mcpx-cli",
   "version": "0.2.0",
-  "description": "CLI interativa para configurar servidores MCP para multiplos providers de IA",
+  "description": "Interactive CLI for configuring MCP servers across multiple AI providers",
   "type": "module",
   "bin": {
     "mcpx": "./dist/bin/mcpx.js"

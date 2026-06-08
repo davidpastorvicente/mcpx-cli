@@ -20,7 +20,7 @@ describe('VscodeProvider', () => {
     },
   };
 
-  it('deve gerar JSON com root key servers e type stdio', () => {
+  it('should generate JSON with servers root key and stdio type', () => {
     const output = provider.generate(servers);
     const parsed = JSON.parse(output);
 
@@ -34,7 +34,7 @@ describe('VscodeProvider', () => {
     expect(parsed.servers['github-tvx'].type).toBe('stdio');
   });
 
-  it('deve ignorar servidores desabilitados', () => {
+  it('should ignore disabled servers', () => {
     const output = provider.generate({
       disabled: { transport: 'stdio', command: 'test', enabled: false },
       enabled: { transport: 'stdio', command: 'test' },
@@ -45,7 +45,7 @@ describe('VscodeProvider', () => {
     expect(parsed.servers['enabled']).toBeDefined();
   });
 
-  it('deve mapear http para type sse', () => {
+  it('should map http to sse type', () => {
     const httpServers: Record<string, McpServerConfig> = {
       remote: {
         transport: 'http',
@@ -64,7 +64,7 @@ describe('VscodeProvider', () => {
     });
   });
 
-  it('deve fazer parse de JSON do VSCode com sse como http', () => {
+  it('should parse VS Code JSON with sse as http', () => {
     const input = JSON.stringify({
       servers: {
         test: {
@@ -80,7 +80,7 @@ describe('VscodeProvider', () => {
     expect(result['test']?.url).toBe('https://mcp.example.com');
   });
 
-  it('deve gerar e parsear de volta com o mesmo resultado (roundtrip)', () => {
+  it('should roundtrip generate -> parse with the same result', () => {
     const generated = provider.generate(servers);
     const parsed = provider.parse(generated);
 
@@ -89,7 +89,7 @@ describe('VscodeProvider', () => {
     expect(parsed['jira-tvx']?.transport).toBe('stdio');
   });
 
-  it('deve ser provider de projeto com configPath correto', () => {
+  it('should be a project-scoped provider with the correct configPath', () => {
     expect(provider.config.supportsProjectConfig).toBe(true);
     expect(provider.config.configPath).toBe('.vscode/mcp.json');
   });

@@ -5,7 +5,7 @@ import type { McpServerConfig } from '../../src/types/canonical.js';
 describe('OpenAICodexProvider', () => {
   const provider = new OpenAICodexProvider();
 
-  it('deve gerar TOML com mcp_servers', () => {
+  it('should generate TOML with mcp_servers', () => {
     const servers: Record<string, McpServerConfig> = {
       test: {
         transport: 'stdio',
@@ -22,7 +22,7 @@ describe('OpenAICodexProvider', () => {
     expect(output).toContain('args = [ "-y", "test-server" ]');
   });
 
-  it('deve fazer parse de TOML', () => {
+  it('should parse TOML', () => {
     const toml = `[mcp_servers.github]
 command = "npx"
 args = ["-y", "@anthropic-ai/mcp-github-server"]
@@ -39,7 +39,7 @@ GITHUB_TOKEN = "ghp_xxx"
     expect(result['github']?.transport).toBe('stdio');
   });
 
-  it('deve fazer roundtrip generate -> parse', () => {
+  it('should roundtrip generate -> parse', () => {
     const servers: Record<string, McpServerConfig> = {
       jira: {
         transport: 'stdio',
@@ -57,7 +57,7 @@ GITHUB_TOKEN = "ghp_xxx"
     expect(parsed['jira']?.env).toEqual({ JIRA_URL: 'https://jira.example.com' });
   });
 
-  it('deve preservar configuracoes existentes ao fazer merge', () => {
+  it('should preserve existing settings during merge', () => {
     const existingToml = `model = "o4-mini"
 approval_mode = "suggest"
 
@@ -84,7 +84,7 @@ args = ["-y", "old-mcp-server"]
     expect(output).not.toContain('old-server');
   });
 
-  it('deve gerar do zero quando existingContent e invalido', () => {
+  it('should generate from scratch when existingContent is invalid', () => {
     const servers: Record<string, McpServerConfig> = {
       test: {
         transport: 'stdio',

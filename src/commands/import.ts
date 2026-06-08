@@ -16,30 +16,30 @@ export async function importCommand(ctx: CommandContext, providerArg?: string): 
   const detections = detector.detectAll();
 
   if (detections.length === 0) {
-    p.log.info('Nenhuma configuracao MCP existente detectada neste diretorio.');
+    p.log.info('No existing MCP configuration detected in this directory.');
     return;
   }
 
   const lines = detections.map((det) => {
     const provider = registry.get(det.provider);
-    return `${provider?.config.displayName ?? det.provider} (${det.filePath}) - ${det.servers.length} servidor(es)`;
+    return `${provider?.config.displayName ?? det.provider} (${det.filePath}) - ${det.servers.length} server(s)`;
   });
-  p.note(lines.join('\n'), 'Configuracoes detectadas');
+  p.note(lines.join('\n'), 'Detected configurations');
 
   let selectedProvider: string;
 
   if (providerArg) {
     selectedProvider = providerArg;
   } else {
-    const result = handleCancel(
+      const result = handleCancel(
       await p.select({
-        message: 'De qual provider importar?',
+        message: 'Which provider should be imported?',
         options: detections.map((d) => {
           const provider = registry.get(d.provider);
           return {
             value: d.provider,
             label: provider?.config.displayName ?? d.provider,
-            hint: `${d.servers.length} servidores`,
+            hint: `${d.servers.length} servers`,
           };
         }),
       }),
@@ -50,7 +50,7 @@ export async function importCommand(ctx: CommandContext, providerArg?: string): 
 
   const provider = registry.get(selectedProvider as ProviderName);
   if (!provider) {
-    p.log.error(`Provider "${selectedProvider}" nao encontrado.`);
+    p.log.error(`Provider "${selectedProvider}" not found.`);
     return;
   }
 
@@ -59,20 +59,20 @@ export async function importCommand(ctx: CommandContext, providerArg?: string): 
   const serverNames = Object.keys(parsedServers);
 
   if (serverNames.length === 0) {
-    p.log.info('Nenhum servidor encontrado nesse provider.');
+    p.log.info('No servers found in that provider.');
     return;
   }
 
   const selectedServers = handleCancel(
     await p.multiselect({
-      message: 'Quais servidores importar?',
+      message: 'Which servers should be imported?',
       options: serverNames.map((name) => ({ value: name, label: name })),
       initialValues: serverNames,
     }),
   );
 
   if (selectedServers === BACK || selectedServers.length === 0) {
-    p.log.info('Nenhum servidor selecionado.');
+    p.log.info('No servers selected.');
     return;
   }
 
@@ -90,11 +90,11 @@ export async function importCommand(ctx: CommandContext, providerArg?: string): 
   }
 
   store.save(config);
-  p.log.success(`${selectedServers.length} servidor(es) importado(s) para .mcpx.json`);
+  p.log.success(`Imported ${selectedServers.length} server(s) into .mcpx.json`);
 
   if (config.providers.length > 0) {
     const doSync = handleCancel(
-      await p.confirm({ message: 'Deseja sincronizar com os providers configurados agora?', initialValue: true }),
+      await p.confirm({ message: 'Sync with the configured providers now?', initialValue: true }),
     );
 
     if (doSync && doSync !== BACK) {
@@ -104,7 +104,7 @@ export async function importCommand(ctx: CommandContext, providerArg?: string): 
         if (result.status === 'error') {
           p.log.error(`${result.filePath}: ${result.error}`);
         } else if (result.status !== 'unchanged') {
-          p.log.success(`${result.status === 'created' ? 'Criado' : 'Atualizado'}: ${result.filePath}`);
+          p.log.success(`${result.status === 'created' ? 'Created' : 'Updated'}: ${result.filePath}`);
         }
       }
     }
