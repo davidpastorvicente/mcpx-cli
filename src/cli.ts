@@ -1,4 +1,5 @@
 import { Command } from 'commander';
+import packageJson from '../package.json' with { type: 'json' };
 import type { CommandContext } from './types/common.js';
 import { initCommand } from './commands/init.js';
 import { addCommand } from './commands/add.js';
@@ -14,7 +15,7 @@ export function createCli(): Command {
   program
     .name('mcpx')
     .description('CLI for configuring MCP servers across multiple AI providers')
-    .version('0.1.0')
+    .version(packageJson.version)
     .option('-d, --dir <path>', 'Project directory', process.cwd())
     .option('--verbose', 'Show detailed logs', false);
 
