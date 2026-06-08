@@ -26,10 +26,11 @@ export async function runServerWizard(existingNames: string[] = []): Promise<Ser
         message: 'Nome do servidor MCP',
         placeholder: 'ex: github, jira, my-server',
         validate: (v) => {
-          if (!v.trim()) return 'Nome obrigatorio';
-          if (!isValidServerName(v.trim()))
+          const value = v?.trim() ?? '';
+          if (!value) return 'Nome obrigatorio';
+          if (!isValidServerName(value))
             return 'Use letras, numeros, pontos, hifens ou underscores';
-          if (existingNames.includes(v.trim())) return `"${v.trim()}" ja existe`;
+          if (existingNames.includes(value)) return `"${value}" ja existe`;
         },
       }),
     );

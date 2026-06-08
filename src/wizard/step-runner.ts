@@ -1,5 +1,4 @@
 import { isCancel } from '@clack/prompts';
-import pc from 'picocolors';
 
 export const BACK = Symbol('BACK');
 export type BackSignal = typeof BACK;
