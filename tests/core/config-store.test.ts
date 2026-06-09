@@ -48,10 +48,10 @@ describe('ConfigStore', () => {
 
   it('should update providers', () => {
     store.createEmpty([]);
-    store.setProviders(['claude-code', 'gemini-cli']);
+    store.setProviders(['claude-code', 'antigravity-cli']);
 
     const config = store.load();
-    expect(config.providers).toEqual(['claude-code', 'gemini-cli']);
+    expect(config.providers).toEqual(['claude-code', 'antigravity-cli']);
   });
 
   it('should throw for invalid config', () => {

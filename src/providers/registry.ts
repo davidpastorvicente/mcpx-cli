@@ -1,7 +1,7 @@
 import type { ProviderName } from '../types/canonical.js';
 import type { Provider } from '../types/providers.js';
 import { ClaudeCodeProvider } from './claude-code.js';
-import { GeminiCliProvider } from './gemini-cli.js';
+import { AntigravityCliProvider } from './antigravity-cli.js';
 import { KimiCliProvider } from './kimi-cli.js';
 import { OpenAICodexProvider } from './openai-codex.js';
 import { OpenCodeProvider } from './opencode.js';
@@ -34,7 +34,7 @@ export class ProviderRegistry {
 export function createRegistry(): ProviderRegistry {
   const registry = new ProviderRegistry();
   registry.register(new ClaudeCodeProvider());
-  registry.register(new GeminiCliProvider());
+  registry.register(new AntigravityCliProvider());
   registry.register(new KimiCliProvider());
   registry.register(new OpenAICodexProvider());
   registry.register(new OpenCodeProvider());

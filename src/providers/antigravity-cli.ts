@@ -5,9 +5,9 @@ import type { Provider, ProviderConfig } from '../types/providers.js';
 import { fileExists } from '../utils/fs.js';
 import { parseJsonLike, updateJsonLikeTopLevelSection } from '../utils/json-like.js';
 
-export class GeminiCliProvider implements Provider {
+export class AntigravityCliProvider implements Provider {
   readonly config: ProviderConfig = {
-    name: 'gemini-cli',
+    name: 'antigravity-cli',
     displayName: 'Antigravity CLI',
     configPath: '.gemini/config/mcp_config.json',
     supportsProjectConfig: false,

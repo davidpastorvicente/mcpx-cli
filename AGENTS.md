@@ -13,12 +13,12 @@
 - Sync behavior lives in `src/core/merger.ts`; provider-specific file formats live one-per-file under `src/providers/`.
 
 ## High-Risk Behaviors
-- `mcpx sync` can write outside the repo. `KimiCliProvider`, `GeminiCliProvider`, `OpenCodeProvider`, and `CopilotCliProvider` target global config files in the user's home directory.
+- `mcpx sync` can write outside the repo. `KimiCliProvider`, `AntigravityCliProvider`, `OpenCodeProvider`, and `CopilotCliProvider` target global config files in the user's home directory.
 - `ConfigDetector` only auto-detects project-scoped providers; it intentionally skips global providers such as Kimi.
 
 ## Provider Quirks Worth Remembering
 - OpenCode config generation is lossy by design: `src/providers/opencode.ts` rewrites `~/.config/opencode/opencode.jsonc` (falling back to `~/.config/opencode/opencode.json` when needed) from canonical data and maps stdio servers to `type: "local"` with `command` as a merged array.
-- `GeminiCliProvider` targets Antigravity's shared MCP config at `~/.gemini/config/mcp_config.json`, still uses the `gemini-cli` provider id for backward compatibility, and maps canonical HTTP transport to `serverUrl`.
+- `AntigravityCliProvider` targets Antigravity's shared MCP config at `~/.gemini/config/mcp_config.json` and maps canonical HTTP transport to `serverUrl`.
 - JSON-based providers preserve unrelated top-level settings while replacing their MCP section; OpenAI Codex does the same for TOML via object-level merge.
 - VS Code maps canonical HTTP transport to `type: "sse"`; IntelliJ infers transport from `command` vs `url`; Copilot uses the global `~/.copilot/mcp-config.json` file.
 

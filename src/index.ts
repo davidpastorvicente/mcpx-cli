@@ -3,7 +3,7 @@ export { ConfigDetector } from './core/detector.js';
 export { syncAllProviders, syncProvider } from './core/merger.js';
 export { createRegistry, ProviderRegistry } from './providers/registry.js';
 export { ClaudeCodeProvider } from './providers/claude-code.js';
-export { GeminiCliProvider } from './providers/gemini-cli.js';
+export { AntigravityCliProvider } from './providers/antigravity-cli.js';
 export { KimiCliProvider } from './providers/kimi-cli.js';
 export { OpenAICodexProvider } from './providers/openai-codex.js';
 export { OpenCodeProvider } from './providers/opencode.js';

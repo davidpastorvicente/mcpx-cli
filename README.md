@@ -15,7 +15,7 @@ Each AI CLI tool uses a **different file format** for configuring MCP (Model Con
 | AI CLI | Config File | Format |
 |--------|------------|--------|
 | Claude Code | `.mcp.json` | JSON |
-| Antigravity CLI (`gemini-cli`) | `~/.gemini/config/mcp_config.json` | JSON |
+| Antigravity CLI | `~/.gemini/config/mcp_config.json` | JSON |
 | Kimi CLI | `~/.kimi/mcp.json` | JSON |
 | OpenAI Codex | `.codex/config.toml` | **TOML** |
 | OpenCode | `~/.config/opencode/opencode.jsonc` (`opencode.json` fallback) | JSONC/JSON |
@@ -100,7 +100,7 @@ MCPX uses a single `.mcpx.json` file as the source of truth:
 ```json
 {
   "version": 1,
-  "providers": ["claude-code", "gemini-cli", "openai-codex", "copilot-cli"],
+  "providers": ["claude-code", "antigravity-cli", "openai-codex", "copilot-cli"],
   "servers": {
     "jira": {
       "description": "Jira Atlassian",
@@ -166,16 +166,6 @@ These providers generate config files **inside your project directory**. Each pr
 | **Root key** | `mcp_servers` |
 | **Smart merge** | Yes — Preserves existing Codex settings (`model`, `approval_mode`, etc.) |
 
-#### ⚫ GitHub Copilot CLI
-
-| Aspect | Detail |
-|--------|--------|
-| **File** | `~/.copilot/mcp-config.json` |
-| **Format** | JSON |
-| **Root key** | `mcpServers` |
-| **Scope** | Global — affects all projects |
-| **Quirks** | Uses the shared global MCP config file in the user's home directory |
-
 #### 🔷 VS Code
 
 | Aspect | Detail |
@@ -207,7 +197,7 @@ These providers use a **single global config file** shared across all projects. 
 | **Root key** | `mcpServers` |
 | **Scope** | Global — affects all projects |
 
-#### 🔵 Antigravity CLI (`gemini-cli`)
+#### 🔵 Antigravity CLI
 
 | Aspect | Detail |
 |--------|--------|
@@ -216,6 +206,16 @@ These providers use a **single global config file** shared across all projects. 
 | **Root key** | `mcpServers` |
 | **Scope** | Global — shared across Antigravity CLI and IDE |
 | **Quirks** | Uses `serverUrl` for remote MCP servers |
+
+#### ⚫ GitHub Copilot CLI
+
+| Aspect | Detail |
+|--------|--------|
+| **File** | `~/.copilot/mcp-config.json` |
+| **Format** | JSON |
+| **Root key** | `mcpServers` |
+| **Scope** | Global — affects all projects |
+| **Quirks** | Uses the shared global MCP config file in the user's home directory |
 
 #### 🟠 OpenCode
 
@@ -284,7 +284,7 @@ src/
 │   ├── base.ts               # Provider interface
 │   ├── registry.ts           # Provider registry (factory)
 │   ├── claude-code.ts        # .mcp.json
-│   ├── gemini-cli.ts         # ~/.gemini/config/mcp_config.json
+│   ├── antigravity-cli.ts    # ~/.gemini/config/mcp_config.json
 │   ├── kimi-cli.ts           # ~/.kimi/mcp.json
 │   ├── openai-codex.ts       # .codex/config.toml
 │   ├── opencode.ts           # ~/.config/opencode/opencode.jsonc

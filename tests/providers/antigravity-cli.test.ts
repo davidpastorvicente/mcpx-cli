@@ -1,11 +1,11 @@
 import os from 'node:os';
 import path from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { GeminiCliProvider } from '../../src/providers/gemini-cli.js';
+import { AntigravityCliProvider } from '../../src/providers/antigravity-cli.js';
 import type { McpServerConfig } from '../../src/types/canonical.js';
 
-describe('GeminiCliProvider', () => {
-  const provider = new GeminiCliProvider();
+describe('AntigravityCliProvider', () => {
+  const provider = new AntigravityCliProvider();
 
   it('should resolve to the shared Antigravity MCP config path', () => {
     const filePath = provider.getConfigFilePath('/tmp/project');

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const PROVIDER_NAMES = [
   'claude-code',
-  'gemini-cli',
+  'antigravity-cli',
   'kimi-cli',
   'openai-codex',
   'opencode',
