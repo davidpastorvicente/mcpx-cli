@@ -15,7 +15,7 @@ Each AI CLI tool uses a **different file format** for configuring MCP (Model Con
 | AI CLI | Config File | Format |
 |--------|------------|--------|
 | Claude Code | `.mcp.json` | JSON |
-| Gemini CLI | `.gemini/settings.json` | JSON |
+| Antigravity CLI (`gemini-cli`) | `~/.gemini/config/mcp_config.json` | JSON |
 | Kimi CLI | `~/.kimi/mcp.json` | JSON |
 | OpenAI Codex | `.codex/config.toml` | **TOML** |
 | OpenCode | `~/.config/opencode/opencode.jsonc` (`opencode.json` fallback) | JSONC/JSON |
@@ -33,7 +33,7 @@ If you use multiple AI tools (and you probably do), you need to **manually maint
 
 ```
 .mcpx.json  ──────►  .mcp.json                     (Claude Code)
-    │       ──────►  .gemini/settings.json          (Gemini CLI)
+    │       ──────►  ~/.gemini/config/mcp_config.json (Antigravity CLI)
     │       ──────►  ~/.kimi/mcp.json               (Kimi CLI)
     │       ──────►  .codex/config.toml             (OpenAI Codex)
     │       ──────►  ~/.config/opencode/opencode.jsonc (OpenCode)
@@ -157,15 +157,6 @@ These providers generate config files **inside your project directory**. Each pr
 | **Root key** | `mcpServers` |
 | **Requires `type`** | Yes `"stdio"` |
 
-#### 🔵 Gemini CLI
-
-| Aspect | Detail |
-|--------|--------|
-| **File** | `.gemini/settings.json` |
-| **Format** | JSON |
-| **Root key** | `mcpServers` |
-| **Requires `type`** | No |
-
 #### 🟢 OpenAI Codex
 
 | Aspect | Detail |
@@ -217,6 +208,16 @@ These providers use a **single global config file** shared across all projects. 
 | **Root key** | `mcpServers` |
 | **Scope** | Global — affects all projects |
 
+#### 🔵 Antigravity CLI (`gemini-cli`)
+
+| Aspect | Detail |
+|--------|--------|
+| **File** | `~/.gemini/config/mcp_config.json` |
+| **Format** | JSON |
+| **Root key** | `mcpServers` |
+| **Scope** | Global — shared across Antigravity CLI and IDE |
+| **Quirks** | Uses `serverUrl` for remote MCP servers |
+
 #### 🟠 OpenCode
 
 | Aspect | Detail |
@@ -261,7 +262,7 @@ Already have MCP servers configured in one of your AI tools? Import them:
 mcpx import
 ```
 
-MCPX detects existing project-level configs (`.mcp.json`, `.gemini/settings.json`, etc.) and lets you select which servers to import into `.mcpx.json`.
+MCPX detects existing project-level configs (`.mcp.json`, `.vscode/mcp.json`, etc.) and lets you select which servers to import into `.mcpx.json`. Global providers such as Antigravity CLI, Kimi CLI, and OpenCode are not auto-detected by the project wizard.
 
 ---
 
@@ -284,7 +285,7 @@ src/
 │   ├── base.ts               # Provider interface
 │   ├── registry.ts           # Provider registry (factory)
 │   ├── claude-code.ts        # .mcp.json
-│   ├── gemini-cli.ts         # .gemini/settings.json
+│   ├── gemini-cli.ts         # ~/.gemini/config/mcp_config.json
 │   ├── kimi-cli.ts           # ~/.kimi/mcp.json
 │   ├── openai-codex.ts       # .codex/config.toml
 │   ├── opencode.ts           # ~/.config/opencode/opencode.jsonc

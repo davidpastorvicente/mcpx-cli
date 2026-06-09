@@ -1,3 +1,4 @@
+import os from 'node:os';
 import path from 'node:path';
 import type { McpServerConfig } from '../types/canonical.js';
 import type { Provider, ProviderConfig } from '../types/providers.js';
@@ -7,9 +8,10 @@ import { parseJsonLike, updateJsonLikeTopLevelSection } from '../utils/json-like
 export class GeminiCliProvider implements Provider {
   readonly config: ProviderConfig = {
     name: 'gemini-cli',
-    displayName: 'Gemini CLI',
-    configPath: '.gemini/settings.json',
-    supportsProjectConfig: true,
+    displayName: 'Antigravity CLI',
+    configPath: '.gemini/config/mcp_config.json',
+    supportsProjectConfig: false,
+    globalConfigPath: path.join(os.homedir(), '.gemini', 'config', 'mcp_config.json'),
   };
 
   generate(servers: Record<string, McpServerConfig>, existingContent?: string): string {
@@ -26,7 +28,7 @@ export class GeminiCliProvider implements Provider {
         };
       } else if (server.transport === 'http') {
         mcpServers[name] = {
-          url: server.url,
+          serverUrl: server.url,
           ...(server.headers && Object.keys(server.headers).length && { headers: server.headers }),
         };
       }
@@ -49,12 +51,12 @@ export class GeminiCliProvider implements Provider {
 
     for (const [name, raw] of Object.entries(data.mcpServers ?? {})) {
       const server: McpServerConfig = {
-        transport: raw['url'] ? 'http' : 'stdio',
+        transport: raw['serverUrl'] ? 'http' : 'stdio',
       };
       if (raw['command']) server.command = raw['command'] as string;
       if (raw['args']) server.args = raw['args'] as string[];
       if (raw['env']) server.env = raw['env'] as Record<string, string>;
-      if (raw['url']) server.url = raw['url'] as string;
+      if (raw['serverUrl']) server.url = raw['serverUrl'] as string;
       if (raw['headers']) server.headers = raw['headers'] as Record<string, string>;
       servers[name] = server;
     }
@@ -63,6 +65,10 @@ export class GeminiCliProvider implements Provider {
   }
 
   getConfigFilePath(projectRoot: string): string {
+    if (this.config.globalConfigPath) {
+      return this.config.globalConfigPath;
+    }
+
     return path.join(projectRoot, this.config.configPath);
   }
 

@@ -6,7 +6,7 @@ import { handleCancel, BACK, type BackSignal } from './step-runner.js';
 
 const PROVIDER_DETAILS: Record<ProviderName, { path: string; hint?: string }> = {
   'claude-code': { path: '.mcp.json' },
-  'gemini-cli': { path: '.gemini/settings.json' },
+  'gemini-cli': { path: '~/.gemini/config/mcp_config.json', hint: 'global, shared with Antigravity tools' },
   'kimi-cli': { path: '~/.kimi/mcp.json', hint: 'global' },
   'openai-codex': { path: '.codex/config.toml' },
   'opencode': { path: '~/.config/opencode/opencode.jsonc', hint: 'global, falls back to opencode.json' },
