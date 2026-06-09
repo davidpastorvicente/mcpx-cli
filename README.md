@@ -48,9 +48,19 @@ If you use multiple AI tools (and you probably do), you need to **manually maint
 
 ### 📦 Installation
 
+Install from this repository clone:
+
 ```bash
-npm install -g mcpx-cli
+npm install -g .
 ```
+
+If you want to install from GitHub instead of a local clone:
+
+```bash
+npm install -g github:davidpastorvicente/mcpx-cli
+```
+
+GitHub installs work because the repository defines a `prepare` script that builds `dist/` during install.
 
 ### ⚡ First Setup
 
