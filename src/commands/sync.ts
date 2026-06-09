@@ -3,7 +3,6 @@ import type { CommandContext } from '../types/common.js';
 import { ConfigStore } from '../core/config-store.js';
 import { createRegistry } from '../providers/registry.js';
 import { syncAllProviders } from '../core/merger.js';
-import { ensureShellAlias } from '../utils/fs.js';
 
 export async function syncCommand(ctx: CommandContext): Promise<void> {
   const store = new ConfigStore(ctx.projectRoot);
@@ -69,10 +68,4 @@ export async function syncCommand(ctx: CommandContext): Promise<void> {
   if (errors > 0) parts.push(`${errors} errors`);
 
   p.log.info(`${results.length} providers processed (${parts.join(', ')})`);
-
-  if (config.providers.includes('copilot-cli')) {
-    if (ensureShellAlias('copilot', 'copilot --additional-mcp-config @.copilot/mcp-config.json')) {
-      p.log.success('Configured the "copilot" shell alias (run "source ~/.zshrc" or restart the terminal).');
-    }
-  }
 }

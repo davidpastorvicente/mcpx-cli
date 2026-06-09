@@ -1,3 +1,4 @@
+import os from 'node:os';
 import path from 'node:path';
 import type { McpServerConfig } from '../types/canonical.js';
 import type { Provider, ProviderConfig } from '../types/providers.js';
@@ -9,7 +10,8 @@ export class CopilotCliProvider implements Provider {
     name: 'copilot-cli',
     displayName: 'Copilot CLI',
     configPath: '.copilot/mcp-config.json',
-    supportsProjectConfig: true,
+    supportsProjectConfig: false,
+    globalConfigPath: path.join(os.homedir(), '.copilot', 'mcp-config.json'),
   };
 
   generate(servers: Record<string, McpServerConfig>, existingContent?: string): string {
@@ -65,6 +67,10 @@ export class CopilotCliProvider implements Provider {
   }
 
   getConfigFilePath(projectRoot: string): string {
+    if (this.config.globalConfigPath) {
+      return this.config.globalConfigPath;
+    }
+
     return path.join(projectRoot, this.config.configPath);
   }
 

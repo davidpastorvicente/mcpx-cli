@@ -4,7 +4,7 @@ import { ConfigStore } from '../core/config-store.js';
 import { ConfigDetector } from '../core/detector.js';
 import { createRegistry } from '../providers/registry.js';
 import { syncAllProviders, cleanupRemovedProviders } from '../core/merger.js';
-import { readTextFile, ensureShellAlias } from '../utils/fs.js';
+import { readTextFile } from '../utils/fs.js';
 import { runServerWizard } from './server-wizard.js';
 import { runProviderWizard } from './provider-wizard.js';
 import { handleCancel, BACK } from './step-runner.js';
@@ -247,12 +247,6 @@ function printSyncResults(
       case 'error':
         p.log.error(`${result.filePath}: ${result.error}`);
         break;
-    }
-  }
-
-  if (results.some((r) => r.provider === 'copilot-cli' && r.status !== 'error')) {
-    if (ensureShellAlias('copilot', 'copilot --additional-mcp-config @.copilot/mcp-config.json')) {
-      p.log.success('Configured the "copilot" shell alias (run "source ~/.zshrc" or restart the terminal).');
     }
   }
 }

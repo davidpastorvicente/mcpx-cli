@@ -10,7 +10,7 @@ const PROVIDER_DETAILS: Record<ProviderName, { path: string; hint?: string }> = 
   'kimi-cli': { path: '~/.kimi/mcp.json', hint: 'global' },
   'openai-codex': { path: '.codex/config.toml' },
   'opencode': { path: '~/.config/opencode/opencode.jsonc', hint: 'global, falls back to opencode.json' },
-  'copilot-cli': { path: '.copilot/mcp-config.json' },
+  'copilot-cli': { path: '~/.copilot/mcp-config.json', hint: 'global' },
   'vscode': { path: '.vscode/mcp.json' },
   'intellij': { path: '.idea/mcp.json' },
 };

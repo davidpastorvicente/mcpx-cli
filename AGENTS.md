@@ -13,20 +13,19 @@
 - Sync behavior lives in `src/core/merger.ts`; provider-specific file formats live one-per-file under `src/providers/`.
 
 ## High-Risk Behaviors
-- `mcpx sync` can write outside the repo. `KimiCliProvider`, `GeminiCliProvider`, and `OpenCodeProvider` target global config files in the user's home directory.
-- `mcpx sync` can also modify the user's shell rc file when `copilot-cli` is enabled. `src/commands/sync.ts` calls `ensureShellAlias()` to append/update a `copilot` alias in `~/.zshrc`, `~/.bashrc`, `~/.bash_profile`, or fish config.
+- `mcpx sync` can write outside the repo. `KimiCliProvider`, `GeminiCliProvider`, `OpenCodeProvider`, and `CopilotCliProvider` target global config files in the user's home directory.
 - `ConfigDetector` only auto-detects project-scoped providers; it intentionally skips global providers such as Kimi.
 
 ## Provider Quirks Worth Remembering
 - OpenCode config generation is lossy by design: `src/providers/opencode.ts` rewrites `~/.config/opencode/opencode.jsonc` (falling back to `~/.config/opencode/opencode.json` when needed) from canonical data and maps stdio servers to `type: "local"` with `command` as a merged array.
 - `GeminiCliProvider` targets Antigravity's shared MCP config at `~/.gemini/config/mcp_config.json`, still uses the `gemini-cli` provider id for backward compatibility, and maps canonical HTTP transport to `serverUrl`.
 - JSON-based providers preserve unrelated top-level settings while replacing their MCP section; OpenAI Codex does the same for TOML via object-level merge.
-- VS Code maps canonical HTTP transport to `type: "sse"`; IntelliJ infers transport from `command` vs `url`; Copilot always injects `tools: ["*"]`.
+- VS Code maps canonical HTTP transport to `type: "sse"`; IntelliJ infers transport from `command` vs `url`; Copilot uses the global `~/.copilot/mcp-config.json` file.
 
 ## Tests
 - Tests are plain Vitest files under `tests/**/*.test.ts`; config is minimal in `vitest.config.ts`.
 - Run a focused suite with `npx vitest run tests/providers/opencode.test.ts`.
-- Provider tests are the best safety net for format changes; there are no integration tests for the interactive wizard or shell-alias side effects.
+- Provider tests are the best safety net for format changes; there are no integration tests for the interactive wizard or cross-tool side effects.
 
 ## Working Style
 - Keep CLI text, comments, tests, and docs in English.

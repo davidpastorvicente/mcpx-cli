@@ -1,3 +1,5 @@
+import os from 'node:os';
+import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { CopilotCliProvider } from '../../src/providers/copilot-cli.js';
 import type { McpServerConfig } from '../../src/types/canonical.js';
@@ -60,8 +62,11 @@ describe('CopilotCliProvider', () => {
     expect(parsed.mcpServers.test.tools).toBeUndefined();
   });
 
-  it('should be a project-scoped provider', () => {
-    expect(provider.config.supportsProjectConfig).toBe(true);
+  it('should resolve to the global Copilot MCP config path', () => {
+    const filePath = provider.getConfigFilePath('/tmp/project');
+
+    expect(filePath).toBe(path.join(os.homedir(), '.copilot', 'mcp-config.json'));
+    expect(provider.config.supportsProjectConfig).toBe(false);
     expect(provider.config.configPath).toBe('.copilot/mcp-config.json');
   });
 

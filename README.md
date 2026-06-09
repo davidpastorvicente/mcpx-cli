@@ -19,7 +19,7 @@ Each AI CLI tool uses a **different file format** for configuring MCP (Model Con
 | Kimi CLI | `~/.kimi/mcp.json` | JSON |
 | OpenAI Codex | `.codex/config.toml` | **TOML** |
 | OpenCode | `~/.config/opencode/opencode.jsonc` (`opencode.json` fallback) | JSONC/JSON |
-| GitHub Copilot CLI | `.copilot/mcp-config.json` | JSON |
+| GitHub Copilot CLI | `~/.copilot/mcp-config.json` | JSON |
 | VS Code | `.vscode/mcp.json` | JSON |
 | IntelliJ IDEA | `.idea/mcp.json` | JSON |
 
@@ -37,7 +37,7 @@ If you use multiple AI tools (and you probably do), you need to **manually maint
     │       ──────►  ~/.kimi/mcp.json               (Kimi CLI)
     │       ──────►  .codex/config.toml             (OpenAI Codex)
     │       ──────►  ~/.config/opencode/opencode.jsonc (OpenCode)
-    │       ──────►  .copilot/mcp-config.json       (Copilot CLI)
+    │       ──────►  ~/.copilot/mcp-config.json     (Copilot CLI)
     │       ──────►  .vscode/mcp.json               (VS Code)
     └─────  ──────►  .idea/mcp.json                 (IntelliJ IDEA)
 ```
@@ -170,12 +170,11 @@ These providers generate config files **inside your project directory**. Each pr
 
 | Aspect | Detail |
 |--------|--------|
-| **File** | `.copilot/mcp-config.json` |
+| **File** | `~/.copilot/mcp-config.json` |
 | **Format** | JSON |
 | **Root key** | `mcpServers` |
-| **Quirks** | Requires `tools: ["*"]` field, needs shell alias for project-level config |
-
-> **📌 Note:** Copilot CLI does not natively auto-discover project-level MCP configs. MCPX automatically configures a shell alias (`copilot='copilot --additional-mcp-config @.copilot/mcp-config.json'`) in your `.zshrc`, `.bashrc`, or `config.fish` so the project config is loaded automatically when you run `copilot`.
+| **Scope** | Global — affects all projects |
+| **Quirks** | Uses the shared global MCP config file in the user's home directory |
 
 #### 🔷 VS Code
 
@@ -262,7 +261,7 @@ Already have MCP servers configured in one of your AI tools? Import them:
 mcpx import
 ```
 
-MCPX detects existing project-level configs (`.mcp.json`, `.vscode/mcp.json`, etc.) and lets you select which servers to import into `.mcpx.json`. Global providers such as Antigravity CLI, Kimi CLI, and OpenCode are not auto-detected by the project wizard.
+MCPX detects existing project-level configs (`.mcp.json`, `.vscode/mcp.json`, etc.) and lets you select which servers to import into `.mcpx.json`. Global providers such as Antigravity CLI, Kimi CLI, OpenCode, and Copilot CLI are not auto-detected by the project wizard.
 
 ---
 
@@ -289,7 +288,7 @@ src/
 │   ├── kimi-cli.ts           # ~/.kimi/mcp.json
 │   ├── openai-codex.ts       # .codex/config.toml
 │   ├── opencode.ts           # ~/.config/opencode/opencode.jsonc
-│   ├── copilot-cli.ts        # .copilot/mcp-config.json
+│   ├── copilot-cli.ts        # ~/.copilot/mcp-config.json
 │   ├── vscode.ts             # .vscode/mcp.json
 │   └── intellij.ts           # .idea/mcp.json
 ├── core/
