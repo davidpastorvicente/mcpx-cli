@@ -94,4 +94,23 @@ describe('ClaudeCodeProvider', () => {
       headers: { Authorization: 'Bearer token' },
     });
   });
+
+  it('should preserve unrelated top-level settings during merge', () => {
+    const existing = `{
+  "theme": "dark",
+  "mcpServers": {
+    "old": {
+      "type": "stdio",
+      "command": "old"
+    }
+  }
+}`;
+
+    const output = provider.generate(servers, existing);
+    const parsed = JSON.parse(output);
+
+    expect(parsed.theme).toBe('dark');
+    expect(parsed.mcpServers['jira-tvx']).toBeDefined();
+    expect(parsed.mcpServers.old).toBeUndefined();
+  });
 });

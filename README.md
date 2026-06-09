@@ -240,6 +240,8 @@ After modifying `.mcpx.json` (manually or via commands), regenerate all provider
 mcpx sync
 ```
 
+For providers that share their config file with non-MCP settings, MCPX replaces only the provider's MCP section and preserves unrelated top-level settings.
+
 ### 🔀 Changing Providers
 
 Use the interactive wizard to add or remove providers:

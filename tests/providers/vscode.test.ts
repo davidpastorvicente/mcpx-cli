@@ -93,4 +93,28 @@ describe('VscodeProvider', () => {
     expect(provider.config.supportsProjectConfig).toBe(true);
     expect(provider.config.configPath).toBe('.vscode/mcp.json');
   });
+
+  it('should preserve unrelated top-level settings during merge', () => {
+    const existing = `{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "token"
+    }
+  ],
+  "servers": {
+    "old": {
+      "type": "stdio",
+      "command": "old"
+    }
+  }
+}`;
+
+    const output = provider.generate(servers, existing);
+    const parsed = JSON.parse(output);
+
+    expect(parsed.inputs).toHaveLength(1);
+    expect(parsed.servers['jira-tvx']).toBeDefined();
+    expect(parsed.servers.old).toBeUndefined();
+  });
 });

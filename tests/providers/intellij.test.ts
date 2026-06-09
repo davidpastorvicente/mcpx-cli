@@ -97,4 +97,22 @@ describe('IntellijProvider', () => {
     expect(provider.config.supportsProjectConfig).toBe(true);
     expect(provider.config.configPath).toBe('.idea/mcp.json');
   });
+
+  it('should preserve unrelated top-level settings during merge', () => {
+    const existing = `{
+  "project": "demo",
+  "mcpServers": {
+    "old": {
+      "command": "old"
+    }
+  }
+}`;
+
+    const output = provider.generate(servers, existing);
+    const parsed = JSON.parse(output);
+
+    expect(parsed.project).toBe('demo');
+    expect(parsed.mcpServers['jira-tvx']).toBeDefined();
+    expect(parsed.mcpServers.old).toBeUndefined();
+  });
 });

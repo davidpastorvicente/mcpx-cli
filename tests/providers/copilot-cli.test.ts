@@ -65,4 +65,32 @@ describe('CopilotCliProvider', () => {
     expect(provider.config.supportsProjectConfig).toBe(true);
     expect(provider.config.configPath).toBe('.copilot/mcp-config.json');
   });
+
+  it('should preserve unrelated top-level settings during merge', () => {
+    const existing = `{
+  "telemetry": true,
+  "mcpServers": {
+    "old": {
+      "command": "old",
+      "tools": ["*"]
+    }
+  }
+}`;
+
+    const output = provider.generate(
+      {
+        github: {
+          transport: 'stdio',
+          command: 'npx',
+          args: ['-y', '@anthropic-ai/mcp-github-server'],
+        },
+      },
+      existing,
+    );
+    const parsed = JSON.parse(output);
+
+    expect(parsed.telemetry).toBe(true);
+    expect(parsed.mcpServers.github).toBeDefined();
+    expect(parsed.mcpServers.old).toBeUndefined();
+  });
 });

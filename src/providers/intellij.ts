@@ -2,6 +2,7 @@ import path from 'node:path';
 import type { McpServerConfig } from '../types/canonical.js';
 import type { Provider, ProviderConfig } from '../types/providers.js';
 import { fileExists } from '../utils/fs.js';
+import { parseJsonLike, updateJsonLikeTopLevelSection } from '../utils/json-like.js';
 
 export class IntellijProvider implements Provider {
   readonly config: ProviderConfig = {
@@ -11,7 +12,7 @@ export class IntellijProvider implements Provider {
     supportsProjectConfig: true,
   };
 
-  generate(servers: Record<string, McpServerConfig>): string {
+  generate(servers: Record<string, McpServerConfig>, existingContent?: string): string {
     const mcpServers: Record<string, unknown> = {};
 
     for (const [name, server] of Object.entries(servers)) {
@@ -31,11 +32,19 @@ export class IntellijProvider implements Provider {
       }
     }
 
+    if (existingContent) {
+      try {
+        return updateJsonLikeTopLevelSection(existingContent, 'mcpServers', mcpServers);
+      } catch {
+        // Fall back to generating a fresh file.
+      }
+    }
+
     return JSON.stringify({ mcpServers }, null, 2) + '\n';
   }
 
   parse(content: string): Record<string, McpServerConfig> {
-    const data = JSON.parse(content) as { mcpServers?: Record<string, Record<string, unknown>> };
+    const data = parseJsonLike(content) as { mcpServers?: Record<string, Record<string, unknown>> };
     const servers: Record<string, McpServerConfig> = {};
 
     for (const [name, raw] of Object.entries(data.mcpServers ?? {})) {

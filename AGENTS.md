@@ -19,7 +19,7 @@
 
 ## Provider Quirks Worth Remembering
 - OpenCode config generation is lossy by design: `src/providers/opencode.ts` rewrites `~/.config/opencode/opencode.jsonc` (falling back to `~/.config/opencode/opencode.json` when needed) from canonical data and maps stdio servers to `type: "local"` with `command` as a merged array.
-- OpenAI Codex is the only provider with merge-preservation logic for existing non-MCP settings; see `src/providers/openai-codex.ts`.
+- JSON-based providers preserve unrelated top-level settings while replacing their MCP section; OpenAI Codex does the same for TOML via object-level merge.
 - VS Code maps canonical HTTP transport to `type: "sse"`; IntelliJ infers transport from `command` vs `url`; Copilot always injects `tools: ["*"]`.
 
 ## Tests
