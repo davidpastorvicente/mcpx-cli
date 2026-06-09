@@ -22,19 +22,17 @@ export class OpenCodeProvider implements Provider {
     const mcp: Record<string, unknown> = {};
 
     for (const [name, server] of Object.entries(servers)) {
-      if (server.enabled === false) continue;
-
       if (server.transport === 'stdio') {
         const command = [server.command, ...(server.args ?? [])];
         mcp[name] = {
-          enabled: true,
+          enabled: server.enabled !== false,
           type: 'local',
           command,
           ...(server.env && Object.keys(server.env).length && { environment: server.env }),
         };
       } else if (server.transport === 'http') {
         mcp[name] = {
-          enabled: true,
+          enabled: server.enabled !== false,
           type: 'remote',
           url: server.url,
           ...(server.headers && Object.keys(server.headers).length && { headers: server.headers }),

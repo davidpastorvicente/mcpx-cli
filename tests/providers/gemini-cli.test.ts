@@ -100,4 +100,22 @@ describe('GeminiCliProvider', () => {
     expect(parsed.mcpServers.test).toBeDefined();
     expect(parsed.mcpServers.old).toBeUndefined();
   });
+
+  it('should keep disabled servers and emit disabled true', () => {
+    const servers: Record<string, McpServerConfig> = {
+      disabled: {
+        transport: 'http',
+        url: 'https://mcp.example.com',
+        enabled: false,
+      },
+    };
+
+    const output = provider.generate(servers);
+    const parsed = JSON.parse(output);
+
+    expect(parsed.mcpServers.disabled).toEqual({
+      serverUrl: 'https://mcp.example.com',
+      disabled: true,
+    });
+  });
 });

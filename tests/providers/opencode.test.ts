@@ -97,4 +97,24 @@ describe('OpenCodeProvider', () => {
       env: { KEY: 'value' },
     });
   });
+
+  it('should keep disabled servers and emit enabled false', () => {
+    const servers: Record<string, McpServerConfig> = {
+      disabled: {
+        transport: 'stdio',
+        command: 'npx',
+        args: ['-y', 'test-server'],
+        enabled: false,
+      },
+    };
+
+    const output = provider.generate(servers);
+    const parsed = JSON.parse(output);
+
+    expect(parsed.mcp.disabled).toEqual({
+      enabled: false,
+      type: 'local',
+      command: ['npx', '-y', 'test-server'],
+    });
+  });
 });
