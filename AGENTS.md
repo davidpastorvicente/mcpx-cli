@@ -7,7 +7,7 @@
 
 ## Repo Shape
 - This is a single-package Node 20+ ESM TypeScript CLI, not a monorepo.
-- Canonical project state lives in `.mcpx.json`; `src/core/config-store.ts` is the read/write entrypoint and validates via Zod schemas in `src/types/canonical.ts`.
+- Canonical project state lives in `~/.agents/mcp.json`; `src/core/config-store.ts` is the read/write entrypoint and validates via Zod schemas in `src/types/canonical.ts`.
 - CLI wiring lives in `src/cli.ts`. Running `mcpx` with no subcommand falls through to `init`.
 - Provider registration is centralized in `src/providers/registry.ts`. Add new providers there or they will not participate in detect/import/sync flows.
 - Sync behavior lives in `src/core/merger.ts`; provider-specific file formats live one-per-file under `src/providers/`.

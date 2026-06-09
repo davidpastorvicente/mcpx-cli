@@ -1,7 +1,7 @@
 import * as p from '@clack/prompts';
 import type { CommandContext } from '../types/common.js';
 import type { ProviderName } from '../types/canonical.js';
-import { ConfigStore } from '../core/config-store.js';
+import { GLOBAL_CONFIG_DISPLAY_PATH, ConfigStore } from '../core/config-store.js';
 import { ConfigDetector } from '../core/detector.js';
 import { createRegistry } from '../providers/registry.js';
 import { syncAllProviders } from '../core/merger.js';
@@ -90,7 +90,7 @@ export async function importCommand(ctx: CommandContext, providerArg?: string): 
   }
 
   store.save(config);
-  p.log.success(`Imported ${selectedServers.length} server(s) into .mcpx.json`);
+  p.log.success(`Imported ${selectedServers.length} server(s) into ${GLOBAL_CONFIG_DISPLAY_PATH}`);
 
   if (config.providers.length > 0) {
     const doSync = handleCancel(

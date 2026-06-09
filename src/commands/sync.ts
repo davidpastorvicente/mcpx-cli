@@ -1,6 +1,6 @@
 import * as p from '@clack/prompts';
 import type { CommandContext } from '../types/common.js';
-import { ConfigStore } from '../core/config-store.js';
+import { GLOBAL_CONFIG_DISPLAY_PATH, ConfigStore } from '../core/config-store.js';
 import { createRegistry } from '../providers/registry.js';
 import { syncAllProviders } from '../core/merger.js';
 
@@ -8,7 +8,7 @@ export async function syncCommand(ctx: CommandContext): Promise<void> {
   const store = new ConfigStore(ctx.projectRoot);
 
   if (!store.exists()) {
-    p.log.warn('No .mcpx.json found in this directory.');
+    p.log.warn(`No ${GLOBAL_CONFIG_DISPLAY_PATH} found in this directory.`);
     p.log.info('Run "mcpx init" to create a configuration.');
     return;
   }

@@ -1,19 +1,22 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import { ConfigStore } from '../../src/core/config-store.js';
+import { GLOBAL_CONFIG_PATH, ConfigStore } from '../../src/core/config-store.js';
 
 describe('ConfigStore', () => {
   let tmpDir: string;
   let store: ConfigStore;
+  const homedirSpy = vi.spyOn(os, 'homedir');
 
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'mcpx-test-'));
+    homedirSpy.mockReturnValue(tmpDir);
     store = new ConfigStore(tmpDir);
   });
 
   afterEach(() => {
+    homedirSpy.mockReset();
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
@@ -79,7 +82,8 @@ describe('ConfigStore', () => {
   });
 
   it('should throw for invalid config', () => {
-    const configPath = path.join(tmpDir, '.mcpx.json');
+    const configPath = GLOBAL_CONFIG_PATH;
+    fs.mkdirSync(path.dirname(configPath), { recursive: true });
     fs.writeFileSync(configPath, JSON.stringify({ invalid: true }));
 
     expect(() => store.load()).toThrow();

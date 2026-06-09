@@ -1,6 +1,6 @@
 import * as p from '@clack/prompts';
 import type { CommandContext } from '../types/common.js';
-import { ConfigStore } from '../core/config-store.js';
+import { GLOBAL_CONFIG_DISPLAY_PATH, ConfigStore } from '../core/config-store.js';
 import { createRegistry } from '../providers/registry.js';
 import { syncAllProviders } from '../core/merger.js';
 import { runServerWizard } from '../wizard/server-wizard.js';
@@ -9,7 +9,7 @@ export async function addCommand(ctx: CommandContext, serverName?: string): Prom
   const store = new ConfigStore(ctx.projectRoot);
 
   if (!store.exists()) {
-    p.log.warn('No .mcpx.json found in this directory.');
+    p.log.warn(`No ${GLOBAL_CONFIG_DISPLAY_PATH} found in this directory.`);
     p.log.info('Run "mcpx init" to create a configuration.');
     return;
   }
@@ -29,7 +29,7 @@ export async function addCommand(ctx: CommandContext, serverName?: string): Prom
   }
 
   const updatedConfig = store.addServer(result.name, result.config);
-  p.log.success(`Server "${result.name}" added to .mcpx.json`);
+  p.log.success(`Server "${result.name}" added to ${GLOBAL_CONFIG_DISPLAY_PATH}`);
 
   const registry = createRegistry();
   const providers = registry.getByNames(updatedConfig.providers);

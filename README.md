@@ -29,10 +29,10 @@ If you use multiple AI tools (and you probably do), you need to **manually maint
 
 ## ✨ The Solution
 
-**MCPX** maintains a single canonical config file (`.mcpx.json`) per project and **automatically generates** the correct config file for each AI CLI provider you use.
+**MCPX** maintains a single canonical config file (`~/.agents/mcp.json`) and **automatically generates** the correct config file for each AI CLI provider you use.
 
 ```
-.mcpx.json  ──────►  .mcp.json                     (Claude Code)
+~/.agents/mcp.json  ──────►  .mcp.json                     (Claude Code)
     │       ──────►  ~/.gemini/config/mcp_config.json (Antigravity CLI)
     │       ──────►  ~/.kimi/mcp.json               (Kimi CLI)
     │       ──────►  .codex/config.toml             (OpenAI Codex)
@@ -66,7 +66,7 @@ The interactive wizard will guide you through:
 2. 📥 **Import** — Offers to import servers from detected configs
 3. ➕ **Add servers** — Interactive wizard to configure new MCP servers
 4. 🎯 **Select providers** — Choose which AI CLIs you want to generate configs for
-5. ⚙️ **Generate** — Creates `.mcpx.json` and all provider config files
+5. ⚙️ **Generate** — Creates `~/.agents/mcp.json` and all provider config files
 
 ---
 
@@ -95,7 +95,7 @@ The interactive wizard will guide you through:
 
 ## 📐 Canonical Format
 
-MCPX uses a single `.mcpx.json` file as the source of truth:
+MCPX uses a single `~/.agents/mcp.json` file as the source of truth:
 
 ```json
 {
@@ -234,7 +234,7 @@ These providers use a **single global config file** shared across all projects. 
 
 ### 🔁 Syncing
 
-After modifying `.mcpx.json` (manually or via commands), regenerate all provider configs:
+After modifying `~/.agents/mcp.json` (manually or via commands), regenerate all provider configs:
 
 ```bash
 mcpx sync
@@ -261,7 +261,7 @@ Already have MCP servers configured in one of your AI tools? Import them:
 mcpx import
 ```
 
-MCPX detects existing project-level configs (`.mcp.json`, `.vscode/mcp.json`, etc.) and lets you select which servers to import into `.mcpx.json`. Global providers such as Antigravity CLI, Kimi CLI, OpenCode, and Copilot CLI are not auto-detected by the project wizard.
+MCPX detects existing project-level configs (`.mcp.json`, `.vscode/mcp.json`, etc.) and lets you select which servers to import into `~/.agents/mcp.json`. Global providers such as Antigravity CLI, Kimi CLI, OpenCode, and Copilot CLI are not auto-detected by the project wizard.
 
 ---
 
@@ -292,7 +292,7 @@ src/
 │   ├── vscode.ts             # .vscode/mcp.json
 │   └── intellij.ts           # .idea/mcp.json
 ├── core/
-│   ├── config-store.ts       # .mcpx.json read/write
+│   ├── config-store.ts       # ~/.agents/mcp.json read/write
 │   ├── detector.ts           # Detect existing configs
 │   └── merger.ts             # Smart sync with merge support
 ├── wizard/

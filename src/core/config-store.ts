@@ -1,15 +1,17 @@
+import os from 'node:os';
 import path from 'node:path';
 import type { McpConfigFile, McpServerConfig, ProviderName } from '../types/canonical.js';
 import { readJsonFile, writeJsonFile, fileExists } from '../utils/fs.js';
 import { validateConfig } from '../utils/validation.js';
 
-const CONFIG_FILENAME = '.mcpx.json';
+export const GLOBAL_CONFIG_PATH = path.join(os.homedir(), '.agents', 'mcp.json');
+export const GLOBAL_CONFIG_DISPLAY_PATH = '~/.agents/mcp.json';
 
 export class ConfigStore {
   private configPath: string;
 
-  constructor(projectRoot: string) {
-    this.configPath = path.join(projectRoot, CONFIG_FILENAME);
+  constructor(_projectRoot: string) {
+    this.configPath = GLOBAL_CONFIG_PATH;
   }
 
   exists(): boolean {

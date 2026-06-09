@@ -1,6 +1,6 @@
 import * as p from '@clack/prompts';
 import type { McpServerConfig } from '../types/canonical.js';
-import { ConfigStore } from '../core/config-store.js';
+import { GLOBAL_CONFIG_DISPLAY_PATH, ConfigStore } from '../core/config-store.js';
 import { ConfigDetector } from '../core/detector.js';
 import { createRegistry } from '../providers/registry.js';
 import { syncAllProviders, cleanupRemovedProviders } from '../core/merger.js';
@@ -219,7 +219,7 @@ async function handleNewConfig(
   }
 
   store.save({ version: 1, providers, servers });
-  p.log.success('Created: .mcpx.json');
+  p.log.success(`Created: ${GLOBAL_CONFIG_DISPLAY_PATH}`);
 
   if (providers.length > 0) {
     const providerInstances = registry.getByNames(providers);
