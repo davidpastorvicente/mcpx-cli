@@ -51,7 +51,31 @@ describe('ConfigStore', () => {
     store.setProviders(['claude-code', 'antigravity-cli']);
 
     const config = store.load();
-    expect(config.providers).toEqual(['claude-code', 'antigravity-cli']);
+    expect(config.providers).toEqual(['antigravity-cli', 'claude-code']);
+  });
+
+  it('should save providers in alphabetical order', () => {
+    store.createEmpty([]);
+    store.setProviders(['vscode', 'antigravity-cli', 'claude-code']);
+
+    const config = store.load();
+    expect(config.providers).toEqual(['antigravity-cli', 'claude-code', 'vscode']);
+  });
+
+  it('should save servers in alphabetical order by key', () => {
+    store.createEmpty([]);
+
+    store.addServer('zeta', {
+      transport: 'stdio',
+      command: 'npx',
+    });
+    store.addServer('alpha', {
+      transport: 'stdio',
+      command: 'uvx',
+    });
+
+    const config = store.load();
+    expect(Object.keys(config.servers)).toEqual(['alpha', 'zeta']);
   });
 
   it('should throw for invalid config', () => {

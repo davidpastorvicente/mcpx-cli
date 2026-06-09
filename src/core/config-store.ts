@@ -26,7 +26,7 @@ export class ConfigStore {
   }
 
   save(config: McpConfigFile): void {
-    writeJsonFile(this.configPath, config);
+    writeJsonFile(this.configPath, normalizeConfig(config));
   }
 
   createEmpty(providers: ProviderName[] = []): McpConfigFile {
@@ -67,4 +67,17 @@ export class ConfigStore {
   getProviders(): ProviderName[] {
     return this.load().providers;
   }
+}
+
+function normalizeConfig(config: McpConfigFile): McpConfigFile {
+  const sortedProviders = [...config.providers].sort();
+  const sortedServers = Object.fromEntries(
+    Object.entries(config.servers).sort(([a], [b]) => a.localeCompare(b)),
+  );
+
+  return {
+    ...config,
+    providers: sortedProviders,
+    servers: sortedServers,
+  };
 }
