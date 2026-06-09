@@ -1,14 +1,21 @@
+import os from 'node:os';
 import path from 'node:path';
 import type { McpServerConfig } from '../types/canonical.js';
 import type { Provider, ProviderConfig } from '../types/providers.js';
 import { fileExists } from '../utils/fs.js';
+import { parseJsonLike } from '../utils/json-like.js';
+
+const OPEN_CODE_DIR = path.join(os.homedir(), '.config', 'opencode');
+const OPEN_CODE_JSONC_PATH = path.join(OPEN_CODE_DIR, 'opencode.jsonc');
+const OPEN_CODE_JSON_PATH = path.join(OPEN_CODE_DIR, 'opencode.json');
 
 export class OpenCodeProvider implements Provider {
   readonly config: ProviderConfig = {
     name: 'opencode',
     displayName: 'OpenCode',
     configPath: 'opencode.json',
-    supportsProjectConfig: true,
+    supportsProjectConfig: false,
+    globalConfigPath: OPEN_CODE_JSONC_PATH,
   };
 
   generate(servers: Record<string, McpServerConfig>): string {
@@ -39,7 +46,7 @@ export class OpenCodeProvider implements Provider {
   }
 
   parse(content: string): Record<string, McpServerConfig> {
-    const data = JSON.parse(content) as { mcp?: Record<string, Record<string, unknown>> };
+    const data = parseJsonLike(content) as { mcp?: Record<string, Record<string, unknown>> };
     const servers: Record<string, McpServerConfig> = {};
 
     for (const [name, raw] of Object.entries(data.mcp ?? {})) {
@@ -61,8 +68,16 @@ export class OpenCodeProvider implements Provider {
     return servers;
   }
 
-  getConfigFilePath(projectRoot: string): string {
-    return path.join(projectRoot, this.config.configPath);
+  getConfigFilePath(_projectRoot: string): string {
+    if (fileExists(OPEN_CODE_JSONC_PATH)) {
+      return OPEN_CODE_JSONC_PATH;
+    }
+
+    if (fileExists(OPEN_CODE_JSON_PATH)) {
+      return OPEN_CODE_JSON_PATH;
+    }
+
+    return OPEN_CODE_JSONC_PATH;
   }
 
   exists(projectRoot: string): boolean {

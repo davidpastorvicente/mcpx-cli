@@ -18,7 +18,7 @@
 - `ConfigDetector` only auto-detects project-scoped providers; it intentionally skips global providers such as Kimi.
 
 ## Provider Quirks Worth Remembering
-- OpenCode config generation is lossy by design: `src/providers/opencode.ts` rewrites `opencode.json` from canonical data and maps stdio servers to `type: "local"` with `command` as a merged array.
+- OpenCode config generation is lossy by design: `src/providers/opencode.ts` rewrites `~/.config/opencode/opencode.jsonc` (falling back to `~/.config/opencode/opencode.json` when needed) from canonical data and maps stdio servers to `type: "local"` with `command` as a merged array.
 - OpenAI Codex is the only provider with merge-preservation logic for existing non-MCP settings; see `src/providers/openai-codex.ts`.
 - VS Code maps canonical HTTP transport to `type: "sse"`; IntelliJ infers transport from `command` vs `url`; Copilot always injects `tools: ["*"]`.
 

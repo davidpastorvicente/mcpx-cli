@@ -18,7 +18,7 @@ Each AI CLI tool uses a **different file format** for configuring MCP (Model Con
 | Gemini CLI | `.gemini/settings.json` | JSON |
 | Kimi CLI | `~/.kimi/mcp.json` | JSON |
 | OpenAI Codex | `.codex/config.toml` | **TOML** |
-| OpenCode | `opencode.json` | JSON |
+| OpenCode | `~/.config/opencode/opencode.jsonc` (`opencode.json` fallback) | JSONC/JSON |
 | GitHub Copilot CLI | `.copilot/mcp-config.json` | JSON |
 | VS Code | `.vscode/mcp.json` | JSON |
 | IntelliJ IDEA | `.idea/mcp.json` | JSON |
@@ -36,7 +36,7 @@ If you use multiple AI tools (and you probably do), you need to **manually maint
     │       ──────►  .gemini/settings.json          (Gemini CLI)
     │       ──────►  ~/.kimi/mcp.json               (Kimi CLI)
     │       ──────►  .codex/config.toml             (OpenAI Codex)
-    │       ──────►  opencode.json                  (OpenCode)
+    │       ──────►  ~/.config/opencode/opencode.jsonc (OpenCode)
     │       ──────►  .copilot/mcp-config.json       (Copilot CLI)
     │       ──────►  .vscode/mcp.json               (VS Code)
     └─────  ──────►  .idea/mcp.json                 (IntelliJ IDEA)
@@ -175,15 +175,6 @@ These providers generate config files **inside your project directory**. Each pr
 | **Root key** | `mcp_servers` |
 | **Smart merge** | Yes — Preserves existing Codex settings (`model`, `approval_mode`, etc.) |
 
-#### 🟠 OpenCode
-
-| Aspect | Detail |
-|--------|--------|
-| **File** | `opencode.json` |
-| **Format** | JSON |
-| **Root key** | `mcp` |
-| **Quirks** | `command` is an array (command + args merged), uses `environment` instead of `env`, `type: "local"` |
-
 #### ⚫ GitHub Copilot CLI
 
 | Aspect | Detail |
@@ -225,6 +216,17 @@ These providers use a **single global config file** shared across all projects. 
 | **Format** | JSON |
 | **Root key** | `mcpServers` |
 | **Scope** | Global — affects all projects |
+
+#### 🟠 OpenCode
+
+| Aspect | Detail |
+|--------|--------|
+| **File** | `~/.config/opencode/opencode.jsonc` |
+| **Fallback** | `~/.config/opencode/opencode.json` when `.jsonc` does not exist |
+| **Format** | JSONC / JSON |
+| **Root key** | `mcp` |
+| **Scope** | Global — affects all projects |
+| **Quirks** | `command` is an array (command + args merged), uses `environment` instead of `env`, `type: "local"` |
 
 ---
 
@@ -283,7 +285,7 @@ src/
 │   ├── gemini-cli.ts         # .gemini/settings.json
 │   ├── kimi-cli.ts           # ~/.kimi/mcp.json
 │   ├── openai-codex.ts       # .codex/config.toml
-│   ├── opencode.ts           # opencode.json
+│   ├── opencode.ts           # ~/.config/opencode/opencode.jsonc
 │   ├── copilot-cli.ts        # .copilot/mcp-config.json
 │   ├── vscode.ts             # .vscode/mcp.json
 │   └── intellij.ts           # .idea/mcp.json
