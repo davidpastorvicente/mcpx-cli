@@ -27,17 +27,17 @@ export class OpenCodeProvider implements Provider {
       if (server.transport === 'stdio') {
         const command = [server.command, ...(server.args ?? [])];
         mcp[name] = {
+          enabled: true,
           type: 'local',
           command,
           ...(server.env && Object.keys(server.env).length && { environment: server.env }),
-          enabled: true,
         };
       } else if (server.transport === 'http') {
         mcp[name] = {
+          enabled: true,
           type: 'remote',
           url: server.url,
           ...(server.headers && Object.keys(server.headers).length && { headers: server.headers }),
-          enabled: true,
         };
       }
     }

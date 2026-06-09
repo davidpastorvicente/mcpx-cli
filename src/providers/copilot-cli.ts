@@ -24,14 +24,12 @@ export class CopilotCliProvider implements Provider {
           ...(server.args?.length && { args: server.args }),
           ...(server.env && Object.keys(server.env).length && { env: server.env }),
           ...(server.cwd && { cwd: server.cwd }),
-          tools: ['*'],
         };
       } else if (server.transport === 'http') {
         mcpServers[name] = {
           type: 'http',
           url: server.url,
           ...(server.headers && Object.keys(server.headers).length && { headers: server.headers }),
-          tools: ['*'],
         };
       }
     }

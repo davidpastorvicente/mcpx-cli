@@ -22,7 +22,6 @@ describe('CopilotCliProvider', () => {
       command: 'npx',
       args: ['-y', '@anthropic-ai/mcp-github-server'],
       env: { GITHUB_TOKEN: 'ghp_xxx' },
-      tools: ['*'],
     });
   });
 
@@ -58,7 +57,7 @@ describe('CopilotCliProvider', () => {
     const parsed = JSON.parse(output);
 
     expect(parsed.mcpServers.test.cwd).toBe('/path/to/project');
-    expect(parsed.mcpServers.test.tools).toEqual(['*']);
+    expect(parsed.mcpServers.test.tools).toBeUndefined();
   });
 
   it('should be a project-scoped provider', () => {
