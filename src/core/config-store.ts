@@ -4,14 +4,17 @@ import type { McpConfigFile, McpServerConfig, ProviderName } from '../types/cano
 import { readJsonFile, writeJsonFile, fileExists } from '../utils/fs.js';
 import { validateConfig } from '../utils/validation.js';
 
-export const GLOBAL_CONFIG_PATH = path.join(os.homedir(), '.agents', 'mcp.json');
 export const GLOBAL_CONFIG_DISPLAY_PATH = '~/.agents/mcp.json';
+
+export function getGlobalConfigPath(): string {
+  return path.join(os.homedir(), '.agents', 'mcp.json');
+}
 
 export class ConfigStore {
   private configPath: string;
 
   constructor(_projectRoot: string) {
-    this.configPath = GLOBAL_CONFIG_PATH;
+    this.configPath = getGlobalConfigPath();
   }
 
   exists(): boolean {

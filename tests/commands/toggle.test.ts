@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import { ConfigStore, GLOBAL_CONFIG_PATH } from '../../src/core/config-store.js';
+import { ConfigStore, getGlobalConfigPath } from '../../src/core/config-store.js';
 import { disableCommand } from '../../src/commands/disable.js';
 import { enableCommand } from '../../src/commands/enable.js';
 
@@ -54,6 +54,6 @@ describe('toggle commands', () => {
 
   it('should keep using the global MCPX config file', () => {
     const store = new ConfigStore(tmpDir);
-    expect(store.getPath()).toBe(GLOBAL_CONFIG_PATH);
+    expect(store.getPath()).toBe(getGlobalConfigPath());
   });
 });

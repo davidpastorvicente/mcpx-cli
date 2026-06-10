@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import { GLOBAL_CONFIG_PATH, ConfigStore } from '../../src/core/config-store.js';
+import { ConfigStore, getGlobalConfigPath } from '../../src/core/config-store.js';
 
 describe('ConfigStore', () => {
   let tmpDir: string;
@@ -107,7 +107,7 @@ describe('ConfigStore', () => {
   });
 
   it('should throw for invalid config', () => {
-    const configPath = GLOBAL_CONFIG_PATH;
+    const configPath = getGlobalConfigPath();
     fs.mkdirSync(path.dirname(configPath), { recursive: true });
     fs.writeFileSync(configPath, JSON.stringify({ invalid: true }));
 
