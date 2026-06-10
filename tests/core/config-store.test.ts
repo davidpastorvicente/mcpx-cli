@@ -81,6 +81,31 @@ describe('ConfigStore', () => {
     expect(Object.keys(config.servers)).toEqual(['alpha', 'zeta']);
   });
 
+  it('should save server properties in canonical order', () => {
+    store.createEmpty([]);
+
+    store.addServer('ordered', {
+      env: { TOKEN: 'abc' },
+      command: 'npx',
+      headers: { Authorization: 'Bearer test' },
+      enabled: true,
+      transport: 'http',
+      args: ['-y', 'server'],
+      url: 'https://mcp.example.com',
+    });
+
+    const config = store.load();
+    expect(Object.keys(config.servers.ordered ?? {})).toEqual([
+      'enabled',
+      'transport',
+      'url',
+      'headers',
+      'command',
+      'args',
+      'env',
+    ]);
+  });
+
   it('should throw for invalid config', () => {
     const configPath = GLOBAL_CONFIG_PATH;
     fs.mkdirSync(path.dirname(configPath), { recursive: true });

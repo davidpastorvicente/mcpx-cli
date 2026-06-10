@@ -74,12 +74,26 @@ export class ConfigStore {
 function normalizeConfig(config: McpConfigFile): McpConfigFile {
   const sortedProviders = [...config.providers].sort();
   const sortedServers = Object.fromEntries(
-    Object.entries(config.servers).sort(([a], [b]) => a.localeCompare(b)),
+    Object.entries(config.servers)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([name, server]) => [name, normalizeServer(server)]),
   );
 
   return {
     ...config,
     providers: sortedProviders,
     servers: sortedServers,
+  };
+}
+
+function normalizeServer(server: McpServerConfig): McpServerConfig {
+  return {
+    ...(server.enabled !== undefined && { enabled: server.enabled }),
+    transport: server.transport,
+    ...(server.url !== undefined && { url: server.url }),
+    ...(server.headers !== undefined && { headers: server.headers }),
+    ...(server.command !== undefined && { command: server.command }),
+    ...(server.args !== undefined && { args: server.args }),
+    ...(server.env !== undefined && { env: server.env }),
   };
 }

@@ -115,26 +115,35 @@ MCPX uses a single `~/.agents/mcp.json` file as the source of truth:
 ```json
 {
   "version": 1,
-  "providers": ["claude-code", "antigravity-cli", "openai-codex", "copilot-cli"],
+  "providers": [
+    "antigravity-cli",
+    "claude-code",
+    "copilot-cli",
+    "openai-codex"
+  ],
   "servers": {
-    "jira": {
-      "description": "Jira Atlassian",
-      "transport": "stdio",
-      "command": "uvx",
-      "args": ["mcp-atlassian"],
-      "env": {
-        "JIRA_URL": "https://myorg.atlassian.net",
-        "JIRA_USERNAME": "user@example.com",
-        "JIRA_API_TOKEN": "your-token"
-      }
-    },
     "github": {
-      "description": "GitHub MCP Server",
+      "enabled": true,
       "transport": "stdio",
       "command": "npx",
-      "args": ["-y", "@anthropic-ai/mcp-github-server"],
+      "args": [
+        "-y",
+        "@anthropic-ai/mcp-github-server"
+      ],
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxx"
+      }
+    },
+    "jira": {
+      "transport": "stdio",
+      "command": "uvx",
+      "args": [
+        "mcp-atlassian"
+      ],
+      "env": {
+        "JIRA_API_TOKEN": "your-token",
+        "JIRA_URL": "https://myorg.atlassian.net",
+        "JIRA_USERNAME": "user@example.com"
       }
     }
   }
@@ -149,10 +158,8 @@ MCPX uses a single `~/.agents/mcp.json` file as the source of truth:
 | `command` | `string` | stdio | Executable command |
 | `args` | `string[]` | — | Command arguments |
 | `env` | `Record<string, string>` | — | Environment variables |
-| `cwd` | `string` | — | Working directory |
 | `url` | `string` | http | Server URL |
 | `headers` | `Record<string, string>` | — | HTTP headers |
-| `description` | `string` | — | Human-readable description |
 | `enabled` | `boolean` | — | Enable/disable (default: `true`) |
 
 ---

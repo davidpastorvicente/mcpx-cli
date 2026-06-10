@@ -16,7 +16,6 @@ interface ServerState {
   env: Record<string, string>;
   url: string;
   headers: Record<string, string>;
-  description: string;
 }
 
 export async function runServerWizard(existingNames: string[] = []): Promise<ServerWizardResult | null> {
@@ -157,16 +156,8 @@ export async function runServerWizard(existingNames: string[] = []): Promise<Ser
     return { headers };
   };
 
-  const stepDescription: Step<ServerState> = async () => {
-    const desc = handleCancel(
-      await p.text({ message: 'Description (optional)', initialValue: '', placeholder: 'short server description' }),
-    );
-    if (desc === BACK) return BACK;
-    return { description: desc as string };
-  };
-
   const result = await runSteps<ServerState>(
-    [stepName, stepTransport, stepStdioCommand, stepStdioEnv, stepHttpUrl, stepHttpHeaders, stepDescription],
+    [stepName, stepTransport, stepStdioCommand, stepStdioEnv, stepHttpUrl, stepHttpHeaders],
     {},
   );
 
@@ -182,8 +173,5 @@ export async function runServerWizard(existingNames: string[] = []): Promise<Ser
     config.url = result.url;
     if (result.headers && Object.keys(result.headers).length) config.headers = result.headers;
   }
-
-  if (result.description) config.description = result.description;
-
   return { name: result.name, config };
 }

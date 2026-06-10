@@ -28,8 +28,7 @@ export async function listCommand(ctx: CommandContext): Promise<void> {
       server.transport === 'stdio'
         ? `${server.command} ${(server.args ?? []).join(' ')}`
         : server.url ?? '';
-    const desc = server.description ? pc.dim(` - ${server.description}`) : '';
-    return `${pc.bold(name)} ${pc.dim(`(${server.transport})`)}${status}\n  ${pc.cyan(cmd)}${desc}`;
+    return `${pc.bold(name)} ${pc.dim(`(${server.transport})`)}${status}\n  ${pc.cyan(cmd)}`;
   });
 
   p.note(lines.join('\n\n'), 'MCP Servers');

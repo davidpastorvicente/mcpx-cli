@@ -14,15 +14,13 @@ export const PROVIDER_NAMES = [
 export type ProviderName = (typeof PROVIDER_NAMES)[number];
 
 export const McpServerConfigSchema = z.object({
-  description: z.string().optional(),
+  enabled: z.boolean().optional(),
   transport: z.enum(['stdio', 'http']),
+  url: z.string().optional(),
+  headers: z.record(z.string()).optional(),
   command: z.string().optional(),
   args: z.array(z.string()).optional(),
   env: z.record(z.string()).optional(),
-  cwd: z.string().optional(),
-  url: z.string().optional(),
-  headers: z.record(z.string()).optional(),
-  enabled: z.boolean().optional(),
 });
 
 export type McpServerConfig = z.infer<typeof McpServerConfigSchema>;

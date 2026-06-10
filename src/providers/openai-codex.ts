@@ -23,7 +23,6 @@ export class OpenAICodexProvider implements Provider {
           command: server.command ?? '',
           ...(server.args?.length && { args: server.args }),
           ...(server.env && Object.keys(server.env).length && { env: server.env }),
-          ...(server.cwd && { cwd: server.cwd }),
         };
       } else if (server.transport === 'http') {
         mcpServers[name] = {
@@ -59,7 +58,6 @@ export class OpenAICodexProvider implements Provider {
       if (raw['env']) server.env = raw['env'] as Record<string, string>;
       if (raw['url']) server.url = raw['url'] as string;
       if (raw['http_headers']) server.headers = raw['http_headers'] as Record<string, string>;
-      if (raw['cwd']) server.cwd = raw['cwd'] as string;
       servers[name] = server;
     }
 

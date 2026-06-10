@@ -25,7 +25,6 @@ export class CopilotCliProvider implements Provider {
           command: server.command,
           ...(server.args?.length && { args: server.args }),
           ...(server.env && Object.keys(server.env).length && { env: server.env }),
-          ...(server.cwd && { cwd: server.cwd }),
         };
       } else if (server.transport === 'http') {
         mcpServers[name] = {

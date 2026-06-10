@@ -45,23 +45,6 @@ describe('CopilotCliProvider', () => {
     expect(result['test']?.args).toContain('--rm');
   });
 
-  it('should include cwd when defined', () => {
-    const servers: Record<string, McpServerConfig> = {
-      test: {
-        transport: 'stdio',
-        command: 'node',
-        args: ['server.js'],
-        cwd: '/path/to/project',
-      },
-    };
-
-    const output = provider.generate(servers);
-    const parsed = JSON.parse(output);
-
-    expect(parsed.mcpServers.test.cwd).toBe('/path/to/project');
-    expect(parsed.mcpServers.test.tools).toBeUndefined();
-  });
-
   it('should resolve to the global Copilot MCP config path', () => {
     const filePath = provider.getConfigFilePath('/tmp/project');
 
