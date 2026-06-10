@@ -26,7 +26,7 @@ describe('toggle commands', () => {
       version: 1,
       providers: [],
       servers: {
-        alpha: { transport: 'stdio', command: 'npx' },
+        alpha: { enabled: true, transport: 'stdio', command: 'npx' },
       },
     });
 
@@ -36,7 +36,7 @@ describe('toggle commands', () => {
     expect(config.servers.alpha?.enabled).toBe(false);
   });
 
-  it('should enable a server by removing enabled false', async () => {
+  it('should enable a server by setting enabled to true', async () => {
     const store = new ConfigStore(tmpDir);
     store.save({
       version: 1,
@@ -49,7 +49,7 @@ describe('toggle commands', () => {
     await enableCommand({ projectRoot: '/unused', verbose: false }, 'alpha');
 
     const config = store.load();
-    expect(config.servers.alpha?.enabled).toBeUndefined();
+    expect(config.servers.alpha?.enabled).toBe(true);
   });
 
   it('should keep using the global MCPX config file', () => {

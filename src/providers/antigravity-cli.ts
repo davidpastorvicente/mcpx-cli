@@ -51,6 +51,7 @@ export class AntigravityCliProvider implements Provider {
 
     for (const [name, raw] of Object.entries(data.mcpServers ?? {})) {
       const server: McpServerConfig = {
+        enabled: raw['disabled'] !== true,
         transport: raw['serverUrl'] ? 'http' : 'stdio',
       };
       if (raw['command']) server.command = raw['command'] as string;

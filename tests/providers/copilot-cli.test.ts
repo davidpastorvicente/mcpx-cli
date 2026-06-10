@@ -10,6 +10,7 @@ describe('CopilotCliProvider', () => {
   it('should generate JSON with mcpServers and no type field', () => {
     const servers: Record<string, McpServerConfig> = {
       github: {
+        enabled: true,
         transport: 'stdio',
         command: 'npx',
         args: ['-y', '@anthropic-ai/mcp-github-server'],
@@ -41,6 +42,7 @@ describe('CopilotCliProvider', () => {
     const result = provider.parse(input);
 
     expect(result['test']?.transport).toBe('stdio');
+    expect(result['test']?.enabled).toBe(true);
     expect(result['test']?.command).toBe('docker');
     expect(result['test']?.args).toContain('--rm');
   });
@@ -67,6 +69,7 @@ describe('CopilotCliProvider', () => {
     const output = provider.generate(
       {
         github: {
+          enabled: true,
           transport: 'stdio',
           command: 'npx',
           args: ['-y', '@anthropic-ai/mcp-github-server'],

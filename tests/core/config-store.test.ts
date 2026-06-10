@@ -36,6 +36,7 @@ describe('ConfigStore', () => {
     store.createEmpty([]);
 
     store.addServer('test', {
+      enabled: true,
       transport: 'stdio',
       command: 'npx',
       args: ['-y', 'test-server'],
@@ -69,10 +70,12 @@ describe('ConfigStore', () => {
     store.createEmpty([]);
 
     store.addServer('zeta', {
+      enabled: true,
       transport: 'stdio',
       command: 'npx',
     });
     store.addServer('alpha', {
+      enabled: true,
       transport: 'stdio',
       command: 'uvx',
     });

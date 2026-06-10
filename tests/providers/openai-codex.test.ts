@@ -8,6 +8,7 @@ describe('OpenAICodexProvider', () => {
   it('should generate TOML with mcp_servers', () => {
     const servers: Record<string, McpServerConfig> = {
       test: {
+        enabled: true,
         transport: 'stdio',
         command: 'npx',
         args: ['-y', 'test-server'],
@@ -34,6 +35,7 @@ GITHUB_TOKEN = "ghp_xxx"
     const result = provider.parse(toml);
 
     expect(result['github']?.command).toBe('npx');
+    expect(result['github']?.enabled).toBe(true);
     expect(result['github']?.args).toEqual(['-y', '@anthropic-ai/mcp-github-server']);
     expect(result['github']?.env).toEqual({ GITHUB_TOKEN: 'ghp_xxx' });
     expect(result['github']?.transport).toBe('stdio');
@@ -42,6 +44,7 @@ GITHUB_TOKEN = "ghp_xxx"
   it('should roundtrip generate -> parse', () => {
     const servers: Record<string, McpServerConfig> = {
       jira: {
+        enabled: true,
         transport: 'stdio',
         command: 'uvx',
         args: ['mcp-atlassian'],
@@ -68,6 +71,7 @@ args = ["-y", "old-mcp-server"]
 
     const servers: Record<string, McpServerConfig> = {
       'new-server': {
+        enabled: true,
         transport: 'stdio',
         command: 'uvx',
         args: ['new-mcp-server'],
@@ -87,6 +91,7 @@ args = ["-y", "old-mcp-server"]
   it('should generate from scratch when existingContent is invalid', () => {
     const servers: Record<string, McpServerConfig> = {
       test: {
+        enabled: true,
         transport: 'stdio',
         command: 'npx',
         args: ['-y', 'test-server'],

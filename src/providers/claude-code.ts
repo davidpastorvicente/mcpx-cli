@@ -51,6 +51,7 @@ export class ClaudeCodeProvider implements Provider {
 
     for (const [name, raw] of Object.entries(data.mcpServers ?? {})) {
       const server: McpServerConfig = {
+        enabled: true,
         transport: raw['type'] === 'http' ? 'http' : 'stdio',
       };
       if (raw['command']) server.command = raw['command'] as string;

@@ -91,7 +91,7 @@ function normalizeConfig(config: McpConfigFile): McpConfigFile {
 
 function normalizeServer(server: McpServerConfig): McpServerConfig {
   return {
-    ...(server.enabled !== undefined && { enabled: server.enabled }),
+    enabled: server.enabled,
     transport: server.transport,
     ...(server.url !== undefined && { url: server.url }),
     ...(server.headers !== undefined && { headers: server.headers }),

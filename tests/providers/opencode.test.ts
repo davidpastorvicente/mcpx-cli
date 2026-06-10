@@ -10,6 +10,7 @@ describe('OpenCodeProvider', () => {
   it('should generate JSON with command as an array and environment', () => {
     const servers: Record<string, McpServerConfig> = {
       test: {
+        enabled: true,
         transport: 'stdio',
         command: 'npx',
         args: ['-y', 'test-server'],
@@ -53,6 +54,7 @@ describe('OpenCodeProvider', () => {
   it('should support remote type as http', () => {
     const servers: Record<string, McpServerConfig> = {
       remote: {
+        enabled: true,
         transport: 'http',
         url: 'https://mcp.example.com',
         headers: { Auth: 'Bearer token' },
@@ -91,6 +93,7 @@ describe('OpenCodeProvider', () => {
     const result = provider.parse(input);
 
     expect(result['test']).toEqual({
+      enabled: true,
       transport: 'stdio',
       command: 'npx',
       args: ['-y', 'test-server'],

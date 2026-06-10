@@ -7,12 +7,14 @@ describe('ClaudeCodeProvider', () => {
 
   const servers: Record<string, McpServerConfig> = {
     'jira-tvx': {
+      enabled: true,
       transport: 'stdio',
       command: 'uvx',
       args: ['mcp-atlassian'],
       env: { JIRA_URL: 'https://jira.example.com' },
     },
     'github-tvx': {
+      enabled: true,
       transport: 'stdio',
       command: 'npx',
       args: ['-y', '@anthropic-ai/mcp-github-server'],
@@ -37,7 +39,7 @@ describe('ClaudeCodeProvider', () => {
   it('should ignore disabled servers', () => {
     const output = provider.generate({
       disabled: { transport: 'stdio', command: 'test', enabled: false },
-      enabled: { transport: 'stdio', command: 'test' },
+      enabled: { enabled: true, transport: 'stdio', command: 'test' },
     });
     const parsed = JSON.parse(output);
 
@@ -60,6 +62,7 @@ describe('ClaudeCodeProvider', () => {
     const result = provider.parse(input);
 
     expect(result['test']).toEqual({
+      enabled: true,
       transport: 'stdio',
       command: 'npx',
       args: ['-y', 'test-server'],
@@ -79,6 +82,7 @@ describe('ClaudeCodeProvider', () => {
   it('should support http transport', () => {
     const httpServers: Record<string, McpServerConfig> = {
       remote: {
+        enabled: true,
         transport: 'http',
         url: 'https://mcp.example.com/api',
         headers: { Authorization: 'Bearer token' },

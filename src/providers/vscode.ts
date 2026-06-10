@@ -51,6 +51,7 @@ export class VscodeProvider implements Provider {
 
     for (const [name, raw] of Object.entries(data.servers ?? {})) {
       const server: McpServerConfig = {
+        enabled: true,
         transport: raw['type'] === 'sse' ? 'http' : 'stdio',
       };
       if (raw['command']) server.command = raw['command'] as string;

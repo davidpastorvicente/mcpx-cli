@@ -7,12 +7,14 @@ describe('IntellijProvider', () => {
 
   const servers: Record<string, McpServerConfig> = {
     'jira-tvx': {
+      enabled: true,
       transport: 'stdio',
       command: 'uvx',
       args: ['mcp-atlassian'],
       env: { JIRA_URL: 'https://jira.example.com' },
     },
     'github-tvx': {
+      enabled: true,
       transport: 'stdio',
       command: 'npx',
       args: ['-y', '@anthropic-ai/mcp-github-server'],
@@ -36,7 +38,7 @@ describe('IntellijProvider', () => {
   it('should ignore disabled servers', () => {
     const output = provider.generate({
       disabled: { transport: 'stdio', command: 'test', enabled: false },
-      enabled: { transport: 'stdio', command: 'test' },
+      enabled: { enabled: true, transport: 'stdio', command: 'test' },
     });
     const parsed = JSON.parse(output);
 
@@ -47,6 +49,7 @@ describe('IntellijProvider', () => {
   it('should support http transport', () => {
     const httpServers: Record<string, McpServerConfig> = {
       remote: {
+        enabled: true,
         transport: 'http',
         url: 'https://mcp.example.com/api',
         headers: { Authorization: 'Bearer token' },
@@ -79,8 +82,10 @@ describe('IntellijProvider', () => {
     const result = provider.parse(input);
 
     expect(result['local']?.transport).toBe('stdio');
+    expect(result['local']?.enabled).toBe(true);
     expect(result['local']?.command).toBe('npx');
     expect(result['remote']?.transport).toBe('http');
+    expect(result['remote']?.enabled).toBe(true);
     expect(result['remote']?.url).toBe('https://mcp.example.com');
   });
 

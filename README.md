@@ -135,6 +135,7 @@ MCPX uses a single `~/.agents/mcp.json` file as the source of truth:
       }
     },
     "jira": {
+      "enabled": true,
       "transport": "stdio",
       "command": "uvx",
       "args": [
@@ -152,15 +153,23 @@ MCPX uses a single `~/.agents/mcp.json` file as the source of truth:
 
 ### 📝 Server Fields
 
+Saved canonical order: `enabled`, `transport`, `url`, `headers`, `command`, `args`, `env`
+
+Every server object must include `enabled` and `transport`.
+
+Transport-specific requirements:
+- `transport: "stdio"` requires `command`
+- `transport: "http"` requires `url`
+
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `transport` | `"stdio"` \| `"http"` | ✅ Yes | Transport protocol |
-| `command` | `string` | stdio | Executable command |
-| `args` | `string[]` | — | Command arguments |
-| `env` | `Record<string, string>` | — | Environment variables |
-| `url` | `string` | http | Server URL |
-| `headers` | `Record<string, string>` | — | HTTP headers |
-| `enabled` | `boolean` | — | Enable/disable (default: `true`) |
+| `enabled` | `boolean` | Always | Whether the server is enabled |
+| `transport` | `"stdio"` \| `"http"` | Always | Canonical transport type |
+| `url` | `string` | When `transport` is `"http"` | Remote server URL |
+| `headers` | `Record<string, string>` | Optional | HTTP headers sent with `url` |
+| `command` | `string` | When `transport` is `"stdio"` | Executable to run locally |
+| `args` | `string[]` | Optional | Arguments passed to `command` |
+| `env` | `Record<string, string>` | Optional | Environment variables for `command` |
 
 ---
 

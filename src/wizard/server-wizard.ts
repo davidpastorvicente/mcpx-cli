@@ -163,7 +163,7 @@ export async function runServerWizard(existingNames: string[] = []): Promise<Ser
 
   if (!result) return null;
 
-  const config: McpServerConfig = { transport: result.transport };
+  const config: McpServerConfig = { enabled: true, transport: result.transport };
 
   if (result.transport === 'stdio') {
     config.command = result.command;

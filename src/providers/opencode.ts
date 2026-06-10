@@ -53,6 +53,7 @@ export class OpenCodeProvider implements Provider {
       const args = commandArray?.slice(1);
 
       const server: McpServerConfig = {
+        enabled: raw['enabled'] !== false,
         transport: raw['type'] === 'remote' ? 'http' : 'stdio',
       };
       if (cmd) server.command = cmd;

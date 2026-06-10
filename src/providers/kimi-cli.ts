@@ -51,6 +51,7 @@ export class KimiCliProvider implements Provider {
 
     for (const [name, raw] of Object.entries(data.mcpServers ?? {})) {
       const server: McpServerConfig = {
+        enabled: true,
         transport: raw['url'] ? 'http' : 'stdio',
       };
       if (raw['command']) server.command = raw['command'] as string;

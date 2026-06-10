@@ -14,7 +14,7 @@ export const PROVIDER_NAMES = [
 export type ProviderName = (typeof PROVIDER_NAMES)[number];
 
 export const McpServerConfigSchema = z.object({
-  enabled: z.boolean().optional(),
+  enabled: z.boolean(),
   transport: z.enum(['stdio', 'http']),
   url: z.string().optional(),
   headers: z.record(z.string()).optional(),

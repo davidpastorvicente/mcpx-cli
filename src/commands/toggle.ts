@@ -31,11 +31,7 @@ export async function toggleServerCommand(
     return;
   }
 
-  if (enabled) {
-    delete server.enabled;
-  } else {
-    server.enabled = false;
-  }
+  server.enabled = enabled;
 
   store.save(config);
   p.log.success(`Server "${targetName}" ${enabled ? 'enabled' : 'disabled'} in ${GLOBAL_CONFIG_DISPLAY_PATH}`);

@@ -18,6 +18,7 @@ describe('AntigravityCliProvider', () => {
   it('should generate stdio MCP servers under mcpServers', () => {
     const servers: Record<string, McpServerConfig> = {
       test: {
+        enabled: true,
         transport: 'stdio',
         command: 'npx',
         args: ['-y', 'test-server'],
@@ -38,6 +39,7 @@ describe('AntigravityCliProvider', () => {
   it('should map canonical http transport to serverUrl', () => {
     const servers: Record<string, McpServerConfig> = {
       remote: {
+        enabled: true,
         transport: 'http',
         url: 'https://mcp.example.com',
         headers: { Authorization: 'Bearer token' },
@@ -66,6 +68,7 @@ describe('AntigravityCliProvider', () => {
     const result = provider.parse(input);
 
     expect(result.remote).toEqual({
+      enabled: true,
       transport: 'http',
       url: 'https://mcp.example.com',
       headers: { Authorization: 'Bearer token' },
@@ -87,6 +90,7 @@ describe('AntigravityCliProvider', () => {
     const output = provider.generate(
       {
         test: {
+          enabled: true,
           transport: 'stdio',
           command: 'npx',
           args: ['-y', 'test-server'],

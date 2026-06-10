@@ -7,12 +7,14 @@ describe('VscodeProvider', () => {
 
   const servers: Record<string, McpServerConfig> = {
     'jira-tvx': {
+      enabled: true,
       transport: 'stdio',
       command: 'uvx',
       args: ['mcp-atlassian'],
       env: { JIRA_URL: 'https://jira.example.com' },
     },
     'github-tvx': {
+      enabled: true,
       transport: 'stdio',
       command: 'npx',
       args: ['-y', '@anthropic-ai/mcp-github-server'],
@@ -37,7 +39,7 @@ describe('VscodeProvider', () => {
   it('should ignore disabled servers', () => {
     const output = provider.generate({
       disabled: { transport: 'stdio', command: 'test', enabled: false },
-      enabled: { transport: 'stdio', command: 'test' },
+      enabled: { enabled: true, transport: 'stdio', command: 'test' },
     });
     const parsed = JSON.parse(output);
 
@@ -48,6 +50,7 @@ describe('VscodeProvider', () => {
   it('should map http to sse type', () => {
     const httpServers: Record<string, McpServerConfig> = {
       remote: {
+        enabled: true,
         transport: 'http',
         url: 'https://api.example.com/mcp',
         headers: { Authorization: 'Bearer token' },
@@ -77,6 +80,7 @@ describe('VscodeProvider', () => {
     const result = provider.parse(input);
 
     expect(result['test']?.transport).toBe('http');
+    expect(result['test']?.enabled).toBe(true);
     expect(result['test']?.url).toBe('https://mcp.example.com');
   });
 
