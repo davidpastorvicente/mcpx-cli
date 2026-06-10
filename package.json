@@ -1,6 +1,6 @@
 {
   "name": "@davidpastorvicente/mcpx-cli",
-  "version": "0.7.0",
+  "version": "1.0.0",
   "description": "Interactive CLI for configuring MCP servers across multiple AI providers",
   "type": "module",
   "bin": {
