@@ -34,7 +34,6 @@
     "test:run": "vitest run",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
-    "prepare": "npm run build",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
