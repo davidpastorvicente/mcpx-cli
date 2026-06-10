@@ -51,8 +51,11 @@ If you use multiple AI tools (and you probably do), you need to **manually maint
 Install from this repository clone:
 
 ```bash
+npm install
 npm install -g .
 ```
+
+Because npm links the local checkout for this install mode, the repository dependencies need to be installed first.
 
 If you want to install from GitHub instead of a local clone:
 
@@ -87,6 +90,8 @@ The interactive wizard will guide you through:
 | `mcpx` or `mcpx init` | 🧙 Interactive setup wizard |
 | `mcpx add [name]` | ➕ Add a new MCP server |
 | `mcpx remove [name]` | ➖ Remove an MCP server |
+| `mcpx enable <name>` | ✅ Enable an MCP server |
+| `mcpx disable <name>` | ⏸️ Disable an MCP server |
 | `mcpx list` | 📄 List configured MCP servers |
 | `mcpx sync` | 🔄 Regenerate all provider config files |
 | `mcpx import [provider]` | 📥 Import config from an existing provider |
