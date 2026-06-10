@@ -20,16 +20,16 @@ export class AntigravityCliProvider implements Provider {
     for (const [name, server] of Object.entries(servers)) {
       if (server.transport === 'stdio') {
         mcpServers[name] = {
+          ...(server.enabled === false && { disabled: true }),
           command: server.command,
           ...(server.args?.length && { args: server.args }),
           ...(server.env && Object.keys(server.env).length && { env: server.env }),
-          ...(server.enabled === false && { disabled: true }),
         };
       } else if (server.transport === 'http') {
         mcpServers[name] = {
+          ...(server.enabled === false && { disabled: true }),
           serverUrl: server.url,
           ...(server.headers && Object.keys(server.headers).length && { headers: server.headers }),
-          ...(server.enabled === false && { disabled: true }),
         };
       }
     }

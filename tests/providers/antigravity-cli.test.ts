@@ -114,8 +114,9 @@ describe('AntigravityCliProvider', () => {
     const parsed = JSON.parse(output);
 
     expect(parsed.mcpServers.disabled).toEqual({
-      serverUrl: 'https://mcp.example.com',
       disabled: true,
+      serverUrl: 'https://mcp.example.com',
     });
+    expect(Object.keys(parsed.mcpServers.disabled)).toEqual(['disabled', 'serverUrl']);
   });
 });
