@@ -164,12 +164,12 @@ Transport-specific requirements:
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `enabled` | `boolean` | Always | Whether the server is enabled |
-| `transport` | `"stdio"` \| `"http"` | Always | Canonical transport type |
+| `transport` | `string` | Always | Transport name. Allowed values: `"stdio"`, `"http"` |
 | `url` | `string` | When `transport` is `"http"` | Remote server URL |
-| `headers` | `Record<string, string>` | Optional | HTTP headers sent with `url` |
+| `headers` | `object<string, string>` | Optional | HTTP headers sent with `url` |
 | `command` | `string` | When `transport` is `"stdio"` | Executable to run locally |
 | `args` | `string[]` | Optional | Arguments passed to `command` |
-| `env` | `Record<string, string>` | Optional | Environment variables for `command` |
+| `env` | `object<string, string>` | Optional | Environment variables for `command` |
 
 ---
 
