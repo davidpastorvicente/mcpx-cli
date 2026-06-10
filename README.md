@@ -60,7 +60,7 @@ If you want to install from GitHub instead of a local clone:
 npm install -g github:davidpastorvicente/mcpx-cli
 ```
 
-GitHub installs use the committed `dist/` output bundled in this repository.
+GitHub installs work because the repository defines a `prepare` script that builds `dist/` during install.
 
 ### ⚡ First Setup
 
