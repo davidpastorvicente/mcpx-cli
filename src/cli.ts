@@ -4,6 +4,8 @@ import type { CommandContext } from './types/common.js';
 import { initCommand } from './commands/init.js';
 import { addCommand } from './commands/add.js';
 import { removeCommand } from './commands/remove.js';
+import { enableCommand } from './commands/enable.js';
+import { disableCommand } from './commands/disable.js';
 import { listCommand } from './commands/list.js';
 import { syncCommand } from './commands/sync.js';
 import { importCommand } from './commands/import.js';
@@ -43,6 +45,18 @@ export function createCli(): Command {
     .description('Remove an MCP server')
     .argument('[name]', 'Server name')
     .action((name?: string) => removeCommand(getContext(), name));
+
+  program
+    .command('enable')
+    .description('Enable an MCP server')
+    .argument('<name>', 'Server name')
+    .action((name: string) => enableCommand(getContext(), name));
+
+  program
+    .command('disable')
+    .description('Disable an MCP server')
+    .argument('<name>', 'Server name')
+    .action((name: string) => disableCommand(getContext(), name));
 
   program
     .command('list')
