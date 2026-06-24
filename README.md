@@ -12,16 +12,16 @@
 
 Each AI CLI tool uses a **different file format** for configuring MCP (Model Context Protocol) servers:
 
-| AI CLI | Config File | Format |
-|--------|------------|--------|
-| Claude Code | `.mcp.json` | JSON |
-| Antigravity CLI | `~/.gemini/config/mcp_config.json` | JSON |
-| Kimi CLI | `~/.kimi/mcp.json` | JSON |
-| OpenAI Codex | `.codex/config.toml` | **TOML** |
-| OpenCode | `~/.config/opencode/opencode.jsonc` (`opencode.json` fallback) | JSONC/JSON |
-| GitHub Copilot CLI | `~/.copilot/mcp-config.json` | JSON |
-| VS Code | `.vscode/mcp.json` | JSON |
-| IntelliJ IDEA | `.idea/mcp.json` | JSON |
+| AI CLI | Project Config | Global Config | Format |
+|--------|----------------|---------------|--------|
+| Claude Code | `.mcp.json` | `~/.claude.json` | JSON |
+| Antigravity CLI | `.gemini/config/mcp_config.json` | `~/.gemini/config/mcp_config.json` | JSON |
+| Kimi CLI | `.kimi-code/mcp.json` | `~/.kimi-code/mcp.json` | JSON |
+| OpenAI Codex | `.codex/config.toml` | `~/.codex/config.toml` | **TOML** |
+| OpenCode | `opencode.json` | `~/.config/opencode/opencode.jsonc` (`opencode.json` fallback) | JSONC/JSON |
+| GitHub Copilot CLI | `.copilot/mcp-config.json` | `~/.copilot/mcp-config.json` | JSON |
+| VS Code | `.vscode/mcp.json` | Not supported | JSON |
+| IntelliJ IDEA | `.idea/mcp.json` | Not supported | JSON |
 
 If you use multiple AI tools (and you probably do), you need to **manually maintain 8 different config files** with different structures, field names, and quirks. For **every single project**.
 
@@ -29,17 +29,18 @@ If you use multiple AI tools (and you probably do), you need to **manually maint
 
 ## ✨ The Solution
 
-**MCPX** maintains a single canonical config file (`~/.agents/mcp.json`) and **automatically generates** the correct config file for each AI CLI provider you use.
+**MCPX** maintains a single canonical config file per scope (`.agents/mcp.json` for a project or `~/.agents/mcp.json` globally) and **automatically generates** the correct config file for each AI CLI provider you use.
 
 ```
-~/.agents/mcp.json  ──────►  .mcp.json                     (Claude Code)
-    │       ──────►  ~/.gemini/config/mcp_config.json (Antigravity CLI)
-    │       ──────►  ~/.kimi/mcp.json               (Kimi CLI)
-    │       ──────►  .codex/config.toml             (OpenAI Codex)
-    │       ──────►  ~/.config/opencode/opencode.jsonc (OpenCode)
-    │       ──────►  ~/.copilot/mcp-config.json     (Copilot CLI)
-    │       ──────►  .vscode/mcp.json               (VS Code)
-    └─────  ──────►  .idea/mcp.json                 (IntelliJ IDEA)
+.agents/mcp.json or ~/.agents/mcp.json
+    │       ──────►  .mcp.json or ~/.claude.json              (Claude Code)
+    │       ──────►  .gemini/... or ~/.gemini/...             (Antigravity CLI)
+    │       ──────►  .kimi-code/mcp.json or ~/.kimi-code/...  (Kimi CLI)
+    │       ──────►  .codex/config.toml or ~/.codex/...       (OpenAI Codex)
+    │       ──────►  opencode.json or ~/.config/opencode/...  (OpenCode)
+    │       ──────►  .copilot/... or ~/.copilot/...           (Copilot CLI)
+    │       ──────►  .vscode/mcp.json                        (VS Code, project only)
+    └─────  ──────►  .idea/mcp.json                          (IntelliJ IDEA, project only)
 ```
 
 ---
@@ -79,7 +80,7 @@ The interactive wizard will guide you through:
 2. 📥 **Import** — Offers to import servers from detected configs
 3. ➕ **Add servers** — Interactive wizard to configure new MCP servers
 4. 🎯 **Select providers** — Choose which AI CLIs you want to generate configs for
-5. ⚙️ **Generate** — Creates `~/.agents/mcp.json` and all provider config files
+5. ⚙️ **Generate** — Creates `.agents/mcp.json` or `~/.agents/mcp.json` and all provider config files
 
 ---
 
@@ -110,7 +111,7 @@ The interactive wizard will guide you through:
 
 ## 📐 Canonical Format
 
-MCPX uses a single `~/.agents/mcp.json` file as the source of truth:
+MCPX uses `.agents/mcp.json` for project-scoped setup or `~/.agents/mcp.json` for global setup as the source of truth:
 
 ```json
 {
@@ -175,15 +176,20 @@ Transport-specific requirements:
 
 ## 🤖 Supported Providers
 
-### 📁 Project-Scoped Providers
+### 📁 Project And Global Scopes
 
-These providers generate config files **inside your project directory**. Each project has its own independent config.
+When you run `mcpx init`, MCPX asks whether to create a project or global configuration. If you run it from your home directory, MCPX assumes global scope.
+
+For non-init commands, MCPX uses `.agents/mcp.json` in the selected project when it exists. If no project config exists, it falls back to `~/.agents/mcp.json`.
+
+Most providers support both scopes. VS Code and IntelliJ IDEA are project-only.
 
 #### 🟣 Claude Code
 
 | Aspect | Detail |
 |--------|--------|
 | **File** | `.mcp.json` |
+| **Global file** | `~/.claude.json` |
 | **Format** | JSON |
 | **Root key** | `mcpServers` |
 | **Requires `type`** | Yes `"stdio"` |
@@ -193,9 +199,50 @@ These providers generate config files **inside your project directory**. Each pr
 | Aspect | Detail |
 |--------|--------|
 | **File** | `.codex/config.toml` |
+| **Global file** | `~/.codex/config.toml` |
 | **Format** | **TOML** |
 | **Root key** | `mcp_servers` |
 | **Smart merge** | Yes — Preserves existing Codex settings (`model`, `approval_mode`, etc.) |
+
+#### 🔴 Kimi CLI
+
+| Aspect | Detail |
+|--------|--------|
+| **File** | `.kimi-code/mcp.json` |
+| **Global file** | `~/.kimi-code/mcp.json` or `$KIMI_CODE_HOME/mcp.json` |
+| **Format** | JSON |
+| **Root key** | `mcpServers` |
+
+#### 🔵 Antigravity CLI
+
+| Aspect | Detail |
+|--------|--------|
+| **File** | `.gemini/config/mcp_config.json` |
+| **Global file** | `~/.gemini/config/mcp_config.json` |
+| **Format** | JSON |
+| **Root key** | `mcpServers` |
+| **Quirks** | Uses `serverUrl` for remote MCP servers |
+
+#### ⚫ GitHub Copilot CLI
+
+| Aspect | Detail |
+|--------|--------|
+| **File** | `.copilot/mcp-config.json` |
+| **Global file** | `~/.copilot/mcp-config.json` |
+| **Format** | JSON |
+| **Root key** | `mcpServers` |
+| **Quirks** | Emits `type` and default `tools: ["*"]` |
+
+#### 🟠 OpenCode
+
+| Aspect | Detail |
+|--------|--------|
+| **File** | `opencode.json` |
+| **Global file** | `~/.config/opencode/opencode.jsonc` |
+| **Fallback** | `~/.config/opencode/opencode.json` when `.jsonc` does not exist |
+| **Format** | JSONC / JSON |
+| **Root key** | `mcp` |
+| **Quirks** | `command` is an array (command + args merged), uses `environment` instead of `env`, `type: "local"` |
 
 #### 🔷 VS Code
 
@@ -204,6 +251,7 @@ These providers generate config files **inside your project directory**. Each pr
 | **File** | `.vscode/mcp.json` |
 | **Format** | JSON |
 | **Root key** | `servers` |
+| **Scope** | Project only |
 | **Quirks** | `type` field required (`"stdio"` or `"sse"`), HTTP mapped as `"sse"` |
 
 #### 🟧 IntelliJ IDEA
@@ -213,51 +261,8 @@ These providers generate config files **inside your project directory**. Each pr
 | **File** | `.idea/mcp.json` |
 | **Format** | JSON |
 | **Root key** | `mcpServers` |
+| **Scope** | Project only |
 | **Quirks** | No `type` field, infers from `command` vs `url` |
-
-### 🌍 Global Providers
-
-These providers use a **single global config file** shared across all projects. Running `mcpx sync` overwrites the global file with the current project's servers.
-
-#### 🔴 Kimi CLI
-
-| Aspect | Detail |
-|--------|--------|
-| **File** | `~/.kimi/mcp.json` |
-| **Format** | JSON |
-| **Root key** | `mcpServers` |
-| **Scope** | Global — affects all projects |
-
-#### 🔵 Antigravity CLI
-
-| Aspect | Detail |
-|--------|--------|
-| **File** | `~/.gemini/config/mcp_config.json` |
-| **Format** | JSON |
-| **Root key** | `mcpServers` |
-| **Scope** | Global — shared across Antigravity CLI and IDE |
-| **Quirks** | Uses `serverUrl` for remote MCP servers |
-
-#### ⚫ GitHub Copilot CLI
-
-| Aspect | Detail |
-|--------|--------|
-| **File** | `~/.copilot/mcp-config.json` |
-| **Format** | JSON |
-| **Root key** | `mcpServers` |
-| **Scope** | Global — affects all projects |
-| **Quirks** | Uses the shared global MCP config file in the user's home directory |
-
-#### 🟠 OpenCode
-
-| Aspect | Detail |
-|--------|--------|
-| **File** | `~/.config/opencode/opencode.jsonc` |
-| **Fallback** | `~/.config/opencode/opencode.json` when `.jsonc` does not exist |
-| **Format** | JSONC / JSON |
-| **Root key** | `mcp` |
-| **Scope** | Global — affects all projects |
-| **Quirks** | `command` is an array (command + args merged), uses `environment` instead of `env`, `type: "local"` |
 
 ---
 
@@ -265,7 +270,7 @@ These providers use a **single global config file** shared across all projects. 
 
 ### 🔁 Syncing
 
-After modifying `~/.agents/mcp.json` (manually or via commands), regenerate all provider configs:
+After modifying `.agents/mcp.json` or `~/.agents/mcp.json` (manually or via commands), regenerate all provider configs:
 
 ```bash
 mcpx sync
@@ -282,7 +287,7 @@ mcpx init
 # Select "Change providers"
 ```
 
-When a provider is **removed**, MCPX **deletes** the corresponding config file. For global providers, legacy project-level files are also cleaned up.
+When a provider is **removed**, MCPX **deletes** the corresponding config file for the active scope.
 
 ### 📥 Importing from Existing Configs
 
@@ -292,7 +297,7 @@ Already have MCP servers configured in one of your AI tools? Import them:
 mcpx import
 ```
 
-MCPX detects existing project-level configs (`.mcp.json`, `.vscode/mcp.json`, etc.) and lets you select which servers to import into `~/.agents/mcp.json`. Global providers such as Antigravity CLI, Kimi CLI, OpenCode, and Copilot CLI are not auto-detected by the project wizard.
+MCPX detects existing provider configs for the active scope and lets you select which servers to import into `.agents/mcp.json` or `~/.agents/mcp.json`.
 
 ---
 
@@ -314,16 +319,16 @@ src/
 ├── providers/
 │   ├── base.ts               # Provider interface
 │   ├── registry.ts           # Provider registry (factory)
-│   ├── claude-code.ts        # .mcp.json
-│   ├── antigravity-cli.ts    # ~/.gemini/config/mcp_config.json
-│   ├── kimi-cli.ts           # ~/.kimi/mcp.json
-│   ├── openai-codex.ts       # .codex/config.toml
-│   ├── opencode.ts           # ~/.config/opencode/opencode.jsonc
-│   ├── copilot-cli.ts        # ~/.copilot/mcp-config.json
+│   ├── claude-code.ts        # .mcp.json / ~/.claude.json
+│   ├── antigravity-cli.ts    # .gemini/config/mcp_config.json / ~/.gemini/config/mcp_config.json
+│   ├── kimi-cli.ts           # .kimi-code/mcp.json / ~/.kimi-code/mcp.json
+│   ├── openai-codex.ts       # .codex/config.toml / ~/.codex/config.toml
+│   ├── opencode.ts           # opencode.json / ~/.config/opencode/opencode.jsonc
+│   ├── copilot-cli.ts        # .copilot/mcp-config.json / ~/.copilot/mcp-config.json
 │   ├── vscode.ts             # .vscode/mcp.json
 │   └── intellij.ts           # .idea/mcp.json
 ├── core/
-│   ├── config-store.ts       # ~/.agents/mcp.json read/write
+│   ├── config-store.ts       # .agents/mcp.json / ~/.agents/mcp.json read/write
 │   ├── detector.ts           # Detect existing configs
 │   └── merger.ts             # Smart sync with merge support
 ├── wizard/
