@@ -1,7 +1,7 @@
 import * as p from '@clack/prompts';
 import type { CommandContext } from '../types/common.js';
 import type { ProviderName } from '../types/canonical.js';
-import { GLOBAL_CONFIG_DISPLAY_PATH, ConfigStore } from '../core/config-store.js';
+import { ConfigStore } from '../core/config-store.js';
 import { ConfigDetector } from '../core/detector.js';
 import { createRegistry } from '../providers/registry.js';
 import { syncAllProviders } from '../core/merger.js';
@@ -11,7 +11,7 @@ import { handleCancel, BACK } from '../wizard/step-runner.js';
 export async function importCommand(ctx: CommandContext, providerArg?: string): Promise<void> {
   const store = new ConfigStore(ctx.projectRoot);
   const registry = createRegistry();
-  const detector = new ConfigDetector(ctx.projectRoot, registry);
+  const detector = new ConfigDetector(ctx.projectRoot, registry, store.scope);
 
   const detections = detector.detectAll();
 
@@ -54,7 +54,7 @@ export async function importCommand(ctx: CommandContext, providerArg?: string): 
     return;
   }
 
-  const content = readTextFile(provider.getConfigFilePath(ctx.projectRoot));
+  const content = readTextFile(provider.getConfigFilePath(ctx.projectRoot, store.scope));
   const parsedServers = provider.parse(content);
   const serverNames = Object.keys(parsedServers);
 
@@ -90,7 +90,7 @@ export async function importCommand(ctx: CommandContext, providerArg?: string): 
   }
 
   store.save(config);
-  p.log.success(`Imported ${selectedServers.length} server(s) into ${GLOBAL_CONFIG_DISPLAY_PATH}`);
+  p.log.success(`Imported ${selectedServers.length} server(s) into ${store.getDisplayPath()}`);
 
   if (config.providers.length > 0) {
     const doSync = handleCancel(
@@ -98,8 +98,10 @@ export async function importCommand(ctx: CommandContext, providerArg?: string): 
     );
 
     if (doSync && doSync !== BACK) {
-      const providers = registry.getByNames(config.providers);
-      const results = syncAllProviders(providers, ctx.projectRoot, config.servers);
+      const providers = registry
+        .getByNames(config.providers)
+        .filter((provider) => store.scope === 'project' ? provider.config.supportsProjectConfig : provider.config.supportsGlobalConfig);
+      const results = syncAllProviders(providers, ctx.projectRoot, config.servers, store.scope);
       for (const result of results) {
         if (result.status === 'error') {
           p.log.error(`${result.filePath}: ${result.error}`);

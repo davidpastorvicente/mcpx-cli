@@ -1,6 +1,7 @@
 import os from 'node:os';
 import path from 'node:path';
 import type { McpServerConfig } from '../types/canonical.js';
+import type { ConfigScope } from '../types/common.js';
 import type { Provider, ProviderConfig } from '../types/providers.js';
 import { fileExists } from '../utils/fs.js';
 import { parseJsonLike, updateJsonLikeTopLevelSection } from '../utils/json-like.js';
@@ -10,7 +11,8 @@ export class AntigravityCliProvider implements Provider {
     name: 'antigravity-cli',
     displayName: 'Antigravity CLI',
     configPath: '.gemini/config/mcp_config.json',
-    supportsProjectConfig: false,
+    supportsProjectConfig: true,
+    supportsGlobalConfig: true,
     globalConfigPath: path.join(os.homedir(), '.gemini', 'config', 'mcp_config.json'),
   };
 
@@ -65,15 +67,13 @@ export class AntigravityCliProvider implements Provider {
     return servers;
   }
 
-  getConfigFilePath(projectRoot: string): string {
-    if (this.config.globalConfigPath) {
-      return this.config.globalConfigPath;
-    }
-
-    return path.join(projectRoot, this.config.configPath);
+  getConfigFilePath(projectRoot: string, scope: ConfigScope = 'project'): string {
+    return scope === 'global' && this.config.globalConfigPath
+      ? this.config.globalConfigPath
+      : path.join(projectRoot, this.config.configPath);
   }
 
-  exists(projectRoot: string): boolean {
-    return fileExists(this.getConfigFilePath(projectRoot));
+  exists(projectRoot: string, scope: ConfigScope = 'project'): boolean {
+    return fileExists(this.getConfigFilePath(projectRoot, scope));
   }
 }

@@ -69,9 +69,15 @@ describe('OpenCodeProvider', () => {
   });
 
   it('should resolve to the global JSONC path by default', () => {
-    const filePath = provider.getConfigFilePath('/tmp/project');
+    const filePath = provider.getConfigFilePath('/tmp/project', 'global');
 
     expect(filePath).toBe(path.join(os.homedir(), '.config', 'opencode', 'opencode.jsonc'));
+  });
+
+  it('should resolve to project opencode.json for project scope', () => {
+    const filePath = provider.getConfigFilePath('/tmp/project', 'project');
+
+    expect(filePath).toBe(path.join('/tmp/project', 'opencode.json'));
   });
 
   it('should parse JSONC input with comments and trailing commas', () => {

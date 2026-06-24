@@ -1,6 +1,8 @@
+import os from 'node:os';
 import path from 'node:path';
 import { parse as parseToml, stringify as stringifyToml } from 'smol-toml';
 import type { McpServerConfig } from '../types/canonical.js';
+import type { ConfigScope } from '../types/common.js';
 import type { Provider, ProviderConfig } from '../types/providers.js';
 import { fileExists } from '../utils/fs.js';
 
@@ -10,6 +12,8 @@ export class OpenAICodexProvider implements Provider {
     displayName: 'OpenAI Codex',
     configPath: '.codex/config.toml',
     supportsProjectConfig: true,
+    supportsGlobalConfig: true,
+    globalConfigPath: path.join(os.homedir(), '.codex', 'config.toml'),
   };
 
   generate(servers: Record<string, McpServerConfig>, existingContent?: string): string {
@@ -65,11 +69,13 @@ export class OpenAICodexProvider implements Provider {
     return servers;
   }
 
-  getConfigFilePath(projectRoot: string): string {
-    return path.join(projectRoot, this.config.configPath);
+  getConfigFilePath(projectRoot: string, scope: ConfigScope = 'project'): string {
+    return scope === 'global' && this.config.globalConfigPath
+      ? this.config.globalConfigPath
+      : path.join(projectRoot, this.config.configPath);
   }
 
-  exists(projectRoot: string): boolean {
-    return fileExists(this.getConfigFilePath(projectRoot));
+  exists(projectRoot: string, scope: ConfigScope = 'project'): boolean {
+    return fileExists(this.getConfigFilePath(projectRoot, scope));
   }
 }

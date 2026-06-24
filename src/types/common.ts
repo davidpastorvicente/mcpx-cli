@@ -1,5 +1,7 @@
 import type { ProviderName } from './canonical.js';
 
+export type ConfigScope = 'project' | 'global';
+
 export interface CommandContext {
   projectRoot: string;
   verbose: boolean;

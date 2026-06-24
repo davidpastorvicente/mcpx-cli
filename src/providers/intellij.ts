@@ -1,5 +1,6 @@
 import path from 'node:path';
 import type { McpServerConfig } from '../types/canonical.js';
+import type { ConfigScope } from '../types/common.js';
 import type { Provider, ProviderConfig } from '../types/providers.js';
 import { fileExists } from '../utils/fs.js';
 import { parseJsonLike, updateJsonLikeTopLevelSection } from '../utils/json-like.js';
@@ -10,6 +11,7 @@ export class IntellijProvider implements Provider {
     displayName: 'IntelliJ IDEA',
     configPath: '.idea/mcp.json',
     supportsProjectConfig: true,
+    supportsGlobalConfig: false,
   };
 
   generate(servers: Record<string, McpServerConfig>, existingContent?: string): string {
@@ -67,7 +69,7 @@ export class IntellijProvider implements Provider {
     return path.join(projectRoot, this.config.configPath);
   }
 
-  exists(projectRoot: string): boolean {
-    return fileExists(this.getConfigFilePath(projectRoot));
+  exists(projectRoot: string, scope: ConfigScope = 'project'): boolean {
+    return scope === 'project' && fileExists(this.getConfigFilePath(projectRoot));
   }
 }

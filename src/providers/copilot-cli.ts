@@ -1,6 +1,7 @@
 import os from 'node:os';
 import path from 'node:path';
 import type { McpServerConfig } from '../types/canonical.js';
+import type { ConfigScope } from '../types/common.js';
 import type { Provider, ProviderConfig } from '../types/providers.js';
 import { fileExists } from '../utils/fs.js';
 import { parseJsonLike, updateJsonLikeTopLevelSection } from '../utils/json-like.js';
@@ -10,7 +11,8 @@ export class CopilotCliProvider implements Provider {
     name: 'copilot-cli',
     displayName: 'Copilot CLI',
     configPath: '.copilot/mcp-config.json',
-    supportsProjectConfig: false,
+    supportsProjectConfig: true,
+    supportsGlobalConfig: true,
     globalConfigPath: path.join(os.homedir(), '.copilot', 'mcp-config.json'),
   };
 
@@ -22,15 +24,18 @@ export class CopilotCliProvider implements Provider {
 
       if (server.transport === 'stdio') {
         mcpServers[name] = {
+          type: 'stdio',
           command: server.command,
           ...(server.args?.length && { args: server.args }),
           ...(server.env && Object.keys(server.env).length && { env: server.env }),
+          tools: ['*'],
         };
       } else if (server.transport === 'http') {
         mcpServers[name] = {
           type: 'http',
           url: server.url,
           ...(server.headers && Object.keys(server.headers).length && { headers: server.headers }),
+          tools: ['*'],
         };
       }
     }
@@ -53,7 +58,7 @@ export class CopilotCliProvider implements Provider {
     for (const [name, raw] of Object.entries(data.mcpServers ?? {})) {
       const server: McpServerConfig = {
         enabled: true,
-        transport: raw['type'] === 'http' ? 'http' : 'stdio',
+        transport: raw['type'] === 'http' || raw['type'] === 'sse' ? 'http' : 'stdio',
       };
       if (raw['command']) server.command = raw['command'] as string;
       if (raw['args']) server.args = raw['args'] as string[];
@@ -66,15 +71,13 @@ export class CopilotCliProvider implements Provider {
     return servers;
   }
 
-  getConfigFilePath(projectRoot: string): string {
-    if (this.config.globalConfigPath) {
-      return this.config.globalConfigPath;
-    }
-
-    return path.join(projectRoot, this.config.configPath);
+  getConfigFilePath(projectRoot: string, scope: ConfigScope = 'project'): string {
+    return scope === 'global' && this.config.globalConfigPath
+      ? this.config.globalConfigPath
+      : path.join(projectRoot, this.config.configPath);
   }
 
-  exists(projectRoot: string): boolean {
-    return fileExists(this.getConfigFilePath(projectRoot));
+  exists(projectRoot: string, scope: ConfigScope = 'project'): boolean {
+    return fileExists(this.getConfigFilePath(projectRoot, scope));
   }
 }

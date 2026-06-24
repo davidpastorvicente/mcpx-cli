@@ -1,7 +1,7 @@
 import * as p from '@clack/prompts';
 import pc from 'picocolors';
 import type { CommandContext } from '../types/common.js';
-import { GLOBAL_CONFIG_DISPLAY_PATH, ConfigStore } from '../core/config-store.js';
+import { ConfigStore } from '../core/config-store.js';
 import { createRegistry } from '../providers/registry.js';
 import { readTextFile, fileExists } from '../utils/fs.js';
 
@@ -9,7 +9,7 @@ export async function statusCommand(ctx: CommandContext): Promise<void> {
   const store = new ConfigStore(ctx.projectRoot);
 
   if (!store.exists()) {
-    p.log.warn(`No ${GLOBAL_CONFIG_DISPLAY_PATH} found in this directory.`);
+    p.log.warn(`No ${store.getDisplayPath()} found.`);
     p.log.info('Run "mcpx init" to create a configuration.');
     return;
   }
@@ -24,11 +24,13 @@ export async function statusCommand(ctx: CommandContext): Promise<void> {
   for (const providerName of config.providers) {
     const provider = registry.get(providerName);
     if (!provider) continue;
+    if (store.scope === 'project' && !provider.config.supportsProjectConfig) continue;
+    if (store.scope === 'global' && !provider.config.supportsGlobalConfig) continue;
 
-    const filePath = provider.getConfigFilePath(ctx.projectRoot);
-    const expectedContent = provider.generate(config.servers);
+    const filePath = provider.getConfigFilePath(ctx.projectRoot, store.scope);
+    const expectedContent = provider.generate(config.servers, undefined, store.scope, ctx.projectRoot);
 
-    const displayPath = provider.config.supportsProjectConfig
+    const displayPath = store.scope === 'project'
       ? provider.config.configPath
       : provider.config.globalConfigPath ?? provider.config.configPath;
 

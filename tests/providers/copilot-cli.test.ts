@@ -7,7 +7,7 @@ import type { McpServerConfig } from '../../src/types/canonical.js';
 describe('CopilotCliProvider', () => {
   const provider = new CopilotCliProvider();
 
-  it('should generate JSON with mcpServers and no type field', () => {
+  it('should generate JSON with mcpServers, type, and tools', () => {
     const servers: Record<string, McpServerConfig> = {
       github: {
         enabled: true,
@@ -22,9 +22,11 @@ describe('CopilotCliProvider', () => {
     const parsed = JSON.parse(output);
 
     expect(parsed.mcpServers.github).toEqual({
+      type: 'stdio',
       command: 'npx',
       args: ['-y', '@anthropic-ai/mcp-github-server'],
       env: { GITHUB_TOKEN: 'ghp_xxx' },
+      tools: ['*'],
     });
   });
 
@@ -47,11 +49,14 @@ describe('CopilotCliProvider', () => {
     expect(result['test']?.args).toContain('--rm');
   });
 
-  it('should resolve to the global Copilot MCP config path', () => {
-    const filePath = provider.getConfigFilePath('/tmp/project');
+  it('should resolve project and global Copilot MCP config paths', () => {
+    const projectFilePath = provider.getConfigFilePath('/tmp/project', 'project');
+    const globalFilePath = provider.getConfigFilePath('/tmp/project', 'global');
 
-    expect(filePath).toBe(path.join(os.homedir(), '.copilot', 'mcp-config.json'));
-    expect(provider.config.supportsProjectConfig).toBe(false);
+    expect(projectFilePath).toBe(path.join('/tmp/project', '.copilot', 'mcp-config.json'));
+    expect(globalFilePath).toBe(path.join(os.homedir(), '.copilot', 'mcp-config.json'));
+    expect(provider.config.supportsProjectConfig).toBe(true);
+    expect(provider.config.supportsGlobalConfig).toBe(true);
     expect(provider.config.configPath).toBe('.copilot/mcp-config.json');
   });
 

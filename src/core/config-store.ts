@@ -1,20 +1,28 @@
 import os from 'node:os';
 import path from 'node:path';
 import type { McpConfigFile, McpServerConfig, ProviderName } from '../types/canonical.js';
+import type { ConfigScope } from '../types/common.js';
 import { readJsonFile, writeJsonFile, fileExists } from '../utils/fs.js';
 import { validateConfig } from '../utils/validation.js';
 
 export const GLOBAL_CONFIG_DISPLAY_PATH = '~/.agents/mcp.json';
+export const PROJECT_CONFIG_DISPLAY_PATH = '.agents/mcp.json';
 
 export function getGlobalConfigPath(): string {
   return path.join(os.homedir(), '.agents', 'mcp.json');
 }
 
+export function getProjectConfigPath(projectRoot: string): string {
+  return path.join(projectRoot, PROJECT_CONFIG_DISPLAY_PATH);
+}
+
 export class ConfigStore {
   private configPath: string;
+  readonly scope: ConfigScope;
 
-  constructor(_projectRoot: string) {
-    this.configPath = getGlobalConfigPath();
+  constructor(projectRoot: string, scope?: ConfigScope) {
+    this.scope = scope ?? detectConfigScope(projectRoot);
+    this.configPath = this.scope === 'project' ? getProjectConfigPath(projectRoot) : getGlobalConfigPath();
   }
 
   exists(): boolean {
@@ -23,6 +31,10 @@ export class ConfigStore {
 
   getPath(): string {
     return this.configPath;
+  }
+
+  getDisplayPath(): string {
+    return this.scope === 'project' ? PROJECT_CONFIG_DISPLAY_PATH : GLOBAL_CONFIG_DISPLAY_PATH;
   }
 
   load(): McpConfigFile {
@@ -72,6 +84,12 @@ export class ConfigStore {
   getProviders(): ProviderName[] {
     return this.load().providers;
   }
+}
+
+function detectConfigScope(projectRoot: string): ConfigScope {
+  if (fileExists(getProjectConfigPath(projectRoot))) return 'project';
+  if (fileExists(getGlobalConfigPath())) return 'global';
+  return 'project';
 }
 
 function normalizeConfig(config: McpConfigFile): McpConfigFile {

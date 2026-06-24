@@ -7,12 +7,15 @@ import type { McpServerConfig } from '../../src/types/canonical.js';
 describe('AntigravityCliProvider', () => {
   const provider = new AntigravityCliProvider();
 
-  it('should resolve to the shared Antigravity MCP config path', () => {
-    const filePath = provider.getConfigFilePath('/tmp/project');
+  it('should resolve project and global Antigravity MCP config paths', () => {
+    const projectFilePath = provider.getConfigFilePath('/tmp/project', 'project');
+    const globalFilePath = provider.getConfigFilePath('/tmp/project', 'global');
 
-    expect(filePath).toBe(path.join(os.homedir(), '.gemini', 'config', 'mcp_config.json'));
+    expect(projectFilePath).toBe(path.join('/tmp/project', '.gemini', 'config', 'mcp_config.json'));
+    expect(globalFilePath).toBe(path.join(os.homedir(), '.gemini', 'config', 'mcp_config.json'));
     expect(provider.config.displayName).toBe('Antigravity CLI');
-    expect(provider.config.supportsProjectConfig).toBe(false);
+    expect(provider.config.supportsProjectConfig).toBe(true);
+    expect(provider.config.supportsGlobalConfig).toBe(true);
   });
 
   it('should generate stdio MCP servers under mcpServers', () => {

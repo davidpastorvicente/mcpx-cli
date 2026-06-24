@@ -39,7 +39,6 @@ function stripJsonComments(content: string): string {
   for (let i = 0; i < content.length; i++) {
     const current = content[i]!;
     const next = content[i + 1];
-    const previous = content[i - 1];
 
     if (inString) {
       result += current;
@@ -115,7 +114,7 @@ function stripTrailingCommas(content: string): string {
     }
 
     if (current === ',') {
-      let j = skipWhitespaceAndComments(content, i + 1);
+      const j = skipWhitespaceAndComments(content, i + 1);
       if (content[j] === '}' || content[j] === ']') {
         continue;
       }

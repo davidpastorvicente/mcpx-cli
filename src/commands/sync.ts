@@ -1,6 +1,6 @@
 import * as p from '@clack/prompts';
 import type { CommandContext } from '../types/common.js';
-import { GLOBAL_CONFIG_DISPLAY_PATH, ConfigStore } from '../core/config-store.js';
+import { ConfigStore } from '../core/config-store.js';
 import { createRegistry } from '../providers/registry.js';
 import { syncAllProviders } from '../core/merger.js';
 
@@ -8,14 +8,16 @@ export async function syncCommand(ctx: CommandContext): Promise<void> {
   const store = new ConfigStore(ctx.projectRoot);
 
   if (!store.exists()) {
-    p.log.warn(`No ${GLOBAL_CONFIG_DISPLAY_PATH} found in this directory.`);
+    p.log.warn(`No ${store.getDisplayPath()} found.`);
     p.log.info('Run "mcpx init" to create a configuration.');
     return;
   }
 
   const config = store.load();
   const registry = createRegistry();
-  const providers = registry.getByNames(config.providers);
+  const providers = registry
+    .getByNames(config.providers)
+    .filter((provider) => store.scope === 'project' ? provider.config.supportsProjectConfig : provider.config.supportsGlobalConfig);
 
   if (providers.length === 0) {
     p.log.warn('No providers configured.');
@@ -25,7 +27,7 @@ export async function syncCommand(ctx: CommandContext): Promise<void> {
   const sp = p.spinner();
   sp.start('Syncing configurations...');
 
-  const results = syncAllProviders(providers, ctx.projectRoot, config.servers);
+  const results = syncAllProviders(providers, ctx.projectRoot, config.servers, store.scope);
 
   sp.stop('Sync complete.');
 

@@ -1,6 +1,7 @@
 import os from 'node:os';
 import path from 'node:path';
 import type { McpServerConfig } from '../types/canonical.js';
+import type { ConfigScope } from '../types/common.js';
 import type { Provider, ProviderConfig } from '../types/providers.js';
 import { fileExists } from '../utils/fs.js';
 import { parseJsonLike } from '../utils/json-like.js';
@@ -14,7 +15,8 @@ export class OpenCodeProvider implements Provider {
     name: 'opencode',
     displayName: 'OpenCode',
     configPath: 'opencode.json',
-    supportsProjectConfig: false,
+    supportsProjectConfig: true,
+    supportsGlobalConfig: true,
     globalConfigPath: OPEN_CODE_JSONC_PATH,
   };
 
@@ -67,7 +69,11 @@ export class OpenCodeProvider implements Provider {
     return servers;
   }
 
-  getConfigFilePath(_projectRoot: string): string {
+  getConfigFilePath(projectRoot: string, scope: ConfigScope = 'project'): string {
+    if (scope === 'project') {
+      return path.join(projectRoot, this.config.configPath);
+    }
+
     if (fileExists(OPEN_CODE_JSONC_PATH)) {
       return OPEN_CODE_JSONC_PATH;
     }
@@ -79,7 +85,7 @@ export class OpenCodeProvider implements Provider {
     return OPEN_CODE_JSONC_PATH;
   }
 
-  exists(projectRoot: string): boolean {
-    return fileExists(this.getConfigFilePath(projectRoot));
+  exists(projectRoot: string, scope: ConfigScope = 'project'): boolean {
+    return fileExists(this.getConfigFilePath(projectRoot, scope));
   }
 }

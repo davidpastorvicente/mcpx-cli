@@ -1,6 +1,7 @@
 import * as p from '@clack/prompts';
-import type { McpServerConfig } from '../types/canonical.js';
-import { GLOBAL_CONFIG_DISPLAY_PATH, ConfigStore } from '../core/config-store.js';
+import type { McpServerConfig, ProviderName } from '../types/canonical.js';
+import type { ConfigScope } from '../types/common.js';
+import { ConfigStore } from '../core/config-store.js';
 import { ConfigDetector } from '../core/detector.js';
 import { createRegistry } from '../providers/registry.js';
 import { syncAllProviders, cleanupRemovedProviders } from '../core/merger.js';
@@ -9,8 +10,8 @@ import { runServerWizard } from './server-wizard.js';
 import { runProviderWizard } from './provider-wizard.js';
 import { handleCancel, BACK } from './step-runner.js';
 
-export async function runMainWizard(projectRoot: string): Promise<void> {
-  const store = new ConfigStore(projectRoot);
+export async function runMainWizard(projectRoot: string, scope?: ConfigScope): Promise<void> {
+  const store = new ConfigStore(projectRoot, scope);
   const registry = createRegistry();
 
   p.intro('MCPX - MCP server configuration');
@@ -63,8 +64,8 @@ async function handleExistingConfig(
       p.log.success(`Server "${result.name}" added.`);
 
       const updatedConfig = store.load();
-      const providers = registry.getByNames(updatedConfig.providers);
-      const results = syncAllProviders(providers, projectRoot, updatedConfig.servers);
+      const providers = getSupportedProviders(registry, updatedConfig.providers, store.scope);
+      const results = syncAllProviders(providers, projectRoot, updatedConfig.servers, store.scope);
       printSyncResults(results);
       break;
     }
@@ -91,13 +92,13 @@ async function handleExistingConfig(
       p.log.success(`Server "${toRemove}" removed.`);
 
       const updatedConfig = store.load();
-      const providers = registry.getByNames(updatedConfig.providers);
-      const results = syncAllProviders(providers, projectRoot, updatedConfig.servers);
+      const providers = getSupportedProviders(registry, updatedConfig.providers, store.scope);
+      const results = syncAllProviders(providers, projectRoot, updatedConfig.servers, store.scope);
       printSyncResults(results);
       break;
     }
     case 'providers': {
-      const newProviders = await runProviderWizard(config.providers);
+      const newProviders = await runProviderWizard(config.providers, store.scope);
       if (newProviders === BACK) break;
 
       const removedNames = config.providers.filter((p) => !newProviders.includes(p));
@@ -107,19 +108,19 @@ async function handleExistingConfig(
       p.log.success('Providers updated.');
 
       if (removedProviders.length > 0) {
-        const cleanupResults = cleanupRemovedProviders(removedProviders, projectRoot);
+        const cleanupResults = cleanupRemovedProviders(removedProviders, projectRoot, store.scope);
         printSyncResults(cleanupResults);
       }
 
       const updatedConfig = store.load();
-      const providers = registry.getByNames(updatedConfig.providers);
-      const results = syncAllProviders(providers, projectRoot, updatedConfig.servers);
+      const providers = getSupportedProviders(registry, updatedConfig.providers, store.scope);
+      const results = syncAllProviders(providers, projectRoot, updatedConfig.servers, store.scope);
       printSyncResults(results);
       break;
     }
     case 'sync': {
-      const providers = registry.getByNames(config.providers);
-      const results = syncAllProviders(providers, projectRoot, config.servers);
+      const providers = getSupportedProviders(registry, config.providers, store.scope);
+      const results = syncAllProviders(providers, projectRoot, config.servers, store.scope);
       printSyncResults(results);
       break;
     }
@@ -134,7 +135,7 @@ async function handleNewConfig(
   registry: ReturnType<typeof createRegistry>,
   projectRoot: string,
 ): Promise<void> {
-  const detector = new ConfigDetector(projectRoot, registry);
+  const detector = new ConfigDetector(projectRoot, registry, store.scope);
   const detections = detector.detectAll();
 
   let servers: Record<string, McpServerConfig> = {};
@@ -160,7 +161,7 @@ async function handleNewConfig(
         const provider = registry.get(det.provider);
         if (!provider) continue;
         try {
-          const content = readTextFile(provider.getConfigFilePath(projectRoot));
+          const content = readTextFile(provider.getConfigFilePath(projectRoot, store.scope));
           const parsed = provider.parse(content);
           servers = { ...servers, ...parsed };
         } catch {
@@ -195,7 +196,7 @@ async function handleNewConfig(
     }
   }
 
-  const providers = await runProviderWizard();
+  const providers = await runProviderWizard([], store.scope);
   if (providers === BACK) {
     p.cancel('Operation canceled.');
     return;
@@ -219,15 +220,25 @@ async function handleNewConfig(
   }
 
   store.save({ version: 1, providers, servers });
-  p.log.success(`Created: ${GLOBAL_CONFIG_DISPLAY_PATH}`);
+  p.log.success(`Created: ${store.getDisplayPath()}`);
 
   if (providers.length > 0) {
-    const providerInstances = registry.getByNames(providers);
-    const results = syncAllProviders(providerInstances, projectRoot, servers);
+    const providerInstances = getSupportedProviders(registry, providers, store.scope);
+    const results = syncAllProviders(providerInstances, projectRoot, servers, store.scope);
     printSyncResults(results);
   }
 
   p.outro('Configuration complete!');
+}
+
+function getSupportedProviders(
+  registry: ReturnType<typeof createRegistry>,
+  providerNames: ProviderName[],
+  scope: ConfigScope,
+) {
+  return registry
+    .getByNames(providerNames)
+    .filter((provider) => scope === 'project' ? provider.config.supportsProjectConfig : provider.config.supportsGlobalConfig);
 }
 
 function printSyncResults(

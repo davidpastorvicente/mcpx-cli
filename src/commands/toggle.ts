@@ -1,6 +1,6 @@
 import * as p from '@clack/prompts';
 import type { CommandContext } from '../types/common.js';
-import { GLOBAL_CONFIG_DISPLAY_PATH, ConfigStore } from '../core/config-store.js';
+import { ConfigStore } from '../core/config-store.js';
 import { createRegistry } from '../providers/registry.js';
 import { syncAllProviders } from '../core/merger.js';
 
@@ -12,7 +12,7 @@ export async function toggleServerCommand(
   const store = new ConfigStore(ctx.projectRoot);
 
   if (!store.exists()) {
-    p.log.warn(`No ${GLOBAL_CONFIG_DISPLAY_PATH} found in this directory.`);
+    p.log.warn(`No ${store.getDisplayPath()} found.`);
     p.log.info('Run "mcpx init" to create a configuration.');
     return;
   }
@@ -34,11 +34,13 @@ export async function toggleServerCommand(
   server.enabled = enabled;
 
   store.save(config);
-  p.log.success(`Server "${targetName}" ${enabled ? 'enabled' : 'disabled'} in ${GLOBAL_CONFIG_DISPLAY_PATH}`);
+  p.log.success(`Server "${targetName}" ${enabled ? 'enabled' : 'disabled'} in ${store.getDisplayPath()}`);
 
   const registry = createRegistry();
-  const providers = registry.getByNames(config.providers);
-  const results = syncAllProviders(providers, ctx.projectRoot, config.servers);
+  const providers = registry
+    .getByNames(config.providers)
+    .filter((provider) => store.scope === 'project' ? provider.config.supportsProjectConfig : provider.config.supportsGlobalConfig);
+  const results = syncAllProviders(providers, ctx.projectRoot, config.servers, store.scope);
 
   for (const result of results) {
     if (result.status === 'error') {

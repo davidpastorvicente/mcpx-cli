@@ -27,5 +27,8 @@
 - Run a focused suite with `npx vitest run tests/providers/opencode.test.ts`.
 - Provider tests are the best safety net for format changes; there are no integration tests for the interactive wizard or cross-tool side effects.
 
+## Releases
+- Always match the latest GitHub release format: title `## 🔌 mcpx-cli vX.Y.Z`, an `### ✨ Updates` section with concise emoji-prefixed bullets, and an `### 📦 Installation` section containing `npm install -g github:davidpastorvicente/mcpx-cli` in a bash code block.
+
 ## Working Style
 - Keep CLI text, comments, tests, and docs in English.

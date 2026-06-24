@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import { ConfigStore, getGlobalConfigPath } from '../../src/core/config-store.js';
+import { ConfigStore, getGlobalConfigPath, getProjectConfigPath } from '../../src/core/config-store.js';
 
 describe('ConfigStore', () => {
   let tmpDir: string;
@@ -12,7 +12,7 @@ describe('ConfigStore', () => {
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'mcpx-test-'));
     homedirSpy.mockReturnValue(tmpDir);
-    store = new ConfigStore(tmpDir);
+    store = new ConfigStore(tmpDir, 'global');
   });
 
   afterEach(() => {
@@ -30,6 +30,24 @@ describe('ConfigStore', () => {
     expect(config.providers).toEqual(['claude-code']);
     expect(config.servers).toEqual({});
     expect(store.exists()).toBe(true);
+  });
+
+  it('should use a project config when requested', () => {
+    const projectStore = new ConfigStore(tmpDir, 'project');
+    projectStore.createEmpty(['claude-code']);
+
+    expect(projectStore.getPath()).toBe(getProjectConfigPath(tmpDir));
+    expect(projectStore.getDisplayPath()).toBe('.agents/mcp.json');
+  });
+
+  it('should auto-detect an existing project config before global config', () => {
+    const projectStore = new ConfigStore(tmpDir, 'project');
+    projectStore.createEmpty(['claude-code']);
+
+    const detected = new ConfigStore(tmpDir);
+
+    expect(detected.scope).toBe('project');
+    expect(detected.getPath()).toBe(getProjectConfigPath(tmpDir));
   });
 
   it('should add and remove a server', () => {

@@ -1,14 +1,14 @@
 import * as p from '@clack/prompts';
 import pc from 'picocolors';
 import type { CommandContext } from '../types/common.js';
-import { GLOBAL_CONFIG_DISPLAY_PATH, ConfigStore } from '../core/config-store.js';
+import { ConfigStore } from '../core/config-store.js';
 import { createRegistry } from '../providers/registry.js';
 
 export async function listCommand(ctx: CommandContext): Promise<void> {
   const store = new ConfigStore(ctx.projectRoot);
 
   if (!store.exists()) {
-    p.log.warn(`No ${GLOBAL_CONFIG_DISPLAY_PATH} found in this directory.`);
+    p.log.warn(`No ${store.getDisplayPath()} found.`);
     p.log.info('Run "mcpx init" to create a configuration.');
     return;
   }

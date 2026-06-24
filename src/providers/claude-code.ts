@@ -1,5 +1,7 @@
+import os from 'node:os';
 import path from 'node:path';
 import type { McpServerConfig } from '../types/canonical.js';
+import type { ConfigScope } from '../types/common.js';
 import type { Provider, ProviderConfig } from '../types/providers.js';
 import { fileExists } from '../utils/fs.js';
 import { parseJsonLike, updateJsonLikeTopLevelSection } from '../utils/json-like.js';
@@ -10,9 +12,15 @@ export class ClaudeCodeProvider implements Provider {
     displayName: 'Claude Code',
     configPath: '.mcp.json',
     supportsProjectConfig: true,
+    supportsGlobalConfig: true,
+    globalConfigPath: path.join(os.homedir(), '.claude.json'),
   };
 
-  generate(servers: Record<string, McpServerConfig>, existingContent?: string): string {
+  generate(
+    servers: Record<string, McpServerConfig>,
+    existingContent?: string,
+    scope: ConfigScope = 'project',
+  ): string {
     const mcpServers: Record<string, unknown> = {};
 
     for (const [name, server] of Object.entries(servers)) {
@@ -32,6 +40,20 @@ export class ClaudeCodeProvider implements Provider {
           ...(server.headers && Object.keys(server.headers).length && { headers: server.headers }),
         };
       }
+    }
+
+    if (scope === 'global') {
+      if (existingContent) {
+        try {
+          const existing = parseJsonLike(existingContent) as Record<string, unknown>;
+          existing['mcpServers'] = mcpServers;
+          return JSON.stringify(existing, null, 2) + '\n';
+        } catch {
+          // Fall back to generating a fresh file.
+        }
+      }
+
+      return JSON.stringify({ mcpServers }, null, 2) + '\n';
     }
 
     if (existingContent) {
@@ -65,11 +87,13 @@ export class ClaudeCodeProvider implements Provider {
     return servers;
   }
 
-  getConfigFilePath(projectRoot: string): string {
-    return path.join(projectRoot, this.config.configPath);
+  getConfigFilePath(projectRoot: string, scope: ConfigScope = 'project'): string {
+    return scope === 'global' && this.config.globalConfigPath
+      ? this.config.globalConfigPath
+      : path.join(projectRoot, this.config.configPath);
   }
 
-  exists(projectRoot: string): boolean {
-    return fileExists(this.getConfigFilePath(projectRoot));
+  exists(projectRoot: string, scope: ConfigScope = 'project'): boolean {
+    return fileExists(this.getConfigFilePath(projectRoot, scope));
   }
 }

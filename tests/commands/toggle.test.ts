@@ -21,7 +21,7 @@ describe('toggle commands', () => {
   });
 
   it('should disable a server by setting enabled to false', async () => {
-    const store = new ConfigStore(tmpDir);
+    const store = new ConfigStore(tmpDir, 'global');
     store.save({
       version: 1,
       providers: [],
@@ -30,14 +30,14 @@ describe('toggle commands', () => {
       },
     });
 
-    await disableCommand({ projectRoot: '/unused', verbose: false }, 'alpha');
+    await disableCommand({ projectRoot: tmpDir, verbose: false }, 'alpha');
 
     const config = store.load();
     expect(config.servers.alpha?.enabled).toBe(false);
   });
 
   it('should enable a server by setting enabled to true', async () => {
-    const store = new ConfigStore(tmpDir);
+    const store = new ConfigStore(tmpDir, 'global');
     store.save({
       version: 1,
       providers: [],
@@ -46,14 +46,14 @@ describe('toggle commands', () => {
       },
     });
 
-    await enableCommand({ projectRoot: '/unused', verbose: false }, 'alpha');
+    await enableCommand({ projectRoot: tmpDir, verbose: false }, 'alpha');
 
     const config = store.load();
     expect(config.servers.alpha?.enabled).toBe(true);
   });
 
   it('should keep using the global MCPX config file', () => {
-    const store = new ConfigStore(tmpDir);
+    const store = new ConfigStore(tmpDir, 'global');
     expect(store.getPath()).toBe(getGlobalConfigPath());
   });
 });

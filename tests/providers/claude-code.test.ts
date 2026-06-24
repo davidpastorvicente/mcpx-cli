@@ -117,4 +117,27 @@ describe('ClaudeCodeProvider', () => {
     expect(parsed.mcpServers['jira-tvx']).toBeDefined();
     expect(parsed.mcpServers.old).toBeUndefined();
   });
+
+  it('should support global user config merge in ~/.claude.json', () => {
+    const existing = `{
+  "theme": "dark",
+  "projects": {
+    "/tmp/project": {
+      "mcpServers": {
+        "local": {
+          "type": "stdio",
+          "command": "old"
+        }
+      }
+    }
+  }
+}`;
+
+    const output = provider.generate(servers, existing, 'global');
+    const parsed = JSON.parse(output);
+
+    expect(parsed.theme).toBe('dark');
+    expect(parsed.projects['/tmp/project'].mcpServers.local.command).toBe('old');
+    expect(parsed.mcpServers['jira-tvx']).toBeDefined();
+  });
 });

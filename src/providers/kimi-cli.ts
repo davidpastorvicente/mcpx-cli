@@ -1,6 +1,7 @@
 import os from 'node:os';
 import path from 'node:path';
 import type { McpServerConfig } from '../types/canonical.js';
+import type { ConfigScope } from '../types/common.js';
 import type { Provider, ProviderConfig } from '../types/providers.js';
 import { fileExists } from '../utils/fs.js';
 import { parseJsonLike, updateJsonLikeTopLevelSection } from '../utils/json-like.js';
@@ -9,9 +10,10 @@ export class KimiCliProvider implements Provider {
   readonly config: ProviderConfig = {
     name: 'kimi-cli',
     displayName: 'Kimi CLI',
-    configPath: '.kimi/mcp.json',
-    supportsProjectConfig: false,
-    globalConfigPath: path.join(os.homedir(), '.kimi', 'mcp.json'),
+    configPath: '.kimi-code/mcp.json',
+    supportsProjectConfig: true,
+    supportsGlobalConfig: true,
+    globalConfigPath: path.join(process.env['KIMI_CODE_HOME'] ?? path.join(os.homedir(), '.kimi-code'), 'mcp.json'),
   };
 
   generate(servers: Record<string, McpServerConfig>, existingContent?: string): string {
@@ -65,14 +67,13 @@ export class KimiCliProvider implements Provider {
     return servers;
   }
 
-  getConfigFilePath(projectRoot: string): string {
-    if (this.config.globalConfigPath) {
-      return this.config.globalConfigPath;
-    }
-    return path.join(projectRoot, this.config.configPath);
+  getConfigFilePath(projectRoot: string, scope: ConfigScope = 'project'): string {
+    return scope === 'global' && this.config.globalConfigPath
+      ? this.config.globalConfigPath
+      : path.join(projectRoot, this.config.configPath);
   }
 
-  exists(projectRoot: string): boolean {
-    return fileExists(this.getConfigFilePath(projectRoot));
+  exists(projectRoot: string, scope: ConfigScope = 'project'): boolean {
+    return fileExists(this.getConfigFilePath(projectRoot, scope));
   }
 }

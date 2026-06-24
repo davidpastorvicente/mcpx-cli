@@ -100,6 +100,7 @@ describe('IntellijProvider', () => {
 
   it('should be a project-scoped provider with the correct configPath', () => {
     expect(provider.config.supportsProjectConfig).toBe(true);
+    expect(provider.config.supportsGlobalConfig).toBe(false);
     expect(provider.config.configPath).toBe('.idea/mcp.json');
   });
 
