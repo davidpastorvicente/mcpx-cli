@@ -41,13 +41,25 @@ describe('ConfigStore', () => {
   });
 
   it('should auto-detect an existing project config before global config', () => {
+    const projectRoot = path.join(tmpDir, 'project');
+    fs.mkdirSync(projectRoot);
+    const projectStore = new ConfigStore(projectRoot, 'project');
+    projectStore.createEmpty(['claude-code']);
+
+    const detected = new ConfigStore(projectRoot);
+
+    expect(detected.scope).toBe('project');
+    expect(detected.getPath()).toBe(getProjectConfigPath(projectRoot));
+  });
+
+  it('should treat the user home directory as global scope', () => {
     const projectStore = new ConfigStore(tmpDir, 'project');
     projectStore.createEmpty(['claude-code']);
 
     const detected = new ConfigStore(tmpDir);
 
-    expect(detected.scope).toBe('project');
-    expect(detected.getPath()).toBe(getProjectConfigPath(tmpDir));
+    expect(detected.scope).toBe('global');
+    expect(detected.getPath()).toBe(getGlobalConfigPath());
   });
 
   it('should add and remove a server', () => {

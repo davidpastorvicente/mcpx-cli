@@ -87,6 +87,7 @@ export class ConfigStore {
 }
 
 function detectConfigScope(projectRoot: string): ConfigScope {
+  if (path.resolve(projectRoot) === path.resolve(os.homedir())) return 'global';
   if (fileExists(getProjectConfigPath(projectRoot))) return 'project';
   if (fileExists(getGlobalConfigPath())) return 'global';
   return 'project';
