@@ -94,7 +94,7 @@ function detectConfigScope(projectRoot: string): ConfigScope {
 }
 
 function normalizeConfig(config: McpConfigFile): McpConfigFile {
-  const sortedProviders = [...config.providers].sort();
+  const sortedProviders = [...config.providers].sort((a, b) => a.localeCompare(b));
   const sortedServers = Object.fromEntries(
     Object.entries(config.servers)
       .sort(([a], [b]) => a.localeCompare(b))
