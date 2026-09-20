@@ -45,6 +45,27 @@ export function parseJsonServers(
   return servers;
 }
 
+export function generateStandardJsonServers(servers: Record<string, McpServerConfig>): Record<string, unknown> {
+  const generated: Record<string, unknown> = {};
+
+  for (const [name, server] of Object.entries(servers)) {
+    if (server.enabled === false) continue;
+
+    generated[name] = server.transport === 'stdio'
+      ? {
+          command: server.command,
+          ...(server.args?.length && { args: server.args }),
+          ...(server.env && Object.keys(server.env).length && { env: server.env }),
+        }
+      : {
+          url: server.url,
+          ...(server.headers && Object.keys(server.headers).length && { headers: server.headers }),
+        };
+  }
+
+  return generated;
+}
+
 export function getConfigFilePath(config: ProviderConfig, projectRoot: string, scope: ConfigScope = 'project'): string {
   return scope === 'global' && config.globalConfigPath
     ? config.globalConfigPath

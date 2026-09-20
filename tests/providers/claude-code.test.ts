@@ -1,29 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { ClaudeCodeProvider } from '../../src/providers/claude-code.js';
 import type { McpServerConfig } from '../../src/types/canonical.js';
+import { standardServers } from './fixtures.js';
 
 describe('ClaudeCodeProvider', () => {
   const provider = new ClaudeCodeProvider();
 
-  const servers: Record<string, McpServerConfig> = {
-    'jira-tvx': {
-      enabled: true,
-      transport: 'stdio',
-      command: 'uvx',
-      args: ['mcp-atlassian'],
-      env: { JIRA_URL: 'https://jira.example.com' },
-    },
-    'github-tvx': {
-      enabled: true,
-      transport: 'stdio',
-      command: 'npx',
-      args: ['-y', '@anthropic-ai/mcp-github-server'],
-      env: { GITHUB_TOKEN: 'ghp_xxx' },
-    },
-  };
-
   it('should generate JSON with mcpServers and stdio type', () => {
-    const output = provider.generate(servers);
+    const output = provider.generate(standardServers);
     const parsed = JSON.parse(output);
 
     expect(parsed.mcpServers['jira-tvx']).toEqual({
@@ -71,7 +55,7 @@ describe('ClaudeCodeProvider', () => {
   });
 
   it('should roundtrip generate -> parse with the same result', () => {
-    const generated = provider.generate(servers);
+    const generated = provider.generate(standardServers);
     const parsed = provider.parse(generated);
 
     expect(parsed['jira-tvx']?.command).toBe('uvx');
@@ -110,7 +94,7 @@ describe('ClaudeCodeProvider', () => {
   }
 }`;
 
-    const output = provider.generate(servers, existing);
+    const output = provider.generate(standardServers, existing);
     const parsed = JSON.parse(output);
 
     expect(parsed.theme).toBe('dark');
@@ -133,7 +117,7 @@ describe('ClaudeCodeProvider', () => {
   }
 }`;
 
-    const output = provider.generate(servers, existing, 'global');
+    const output = provider.generate(standardServers, existing, 'global');
     const parsed = JSON.parse(output);
 
     expect(parsed.theme).toBe('dark');

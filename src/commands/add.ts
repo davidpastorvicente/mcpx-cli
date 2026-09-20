@@ -1,9 +1,8 @@
 import * as p from '@clack/prompts';
 import type { CommandContext } from '../types/common.js';
 import { ConfigStore } from '../core/config-store.js';
-import { createRegistry } from '../providers/registry.js';
-import { syncAllProviders } from '../core/merger.js';
 import { runServerWizard } from '../wizard/server-wizard.js';
+import { syncConfigProviders } from './sync-config-providers.js';
 
 export async function addCommand(ctx: CommandContext, serverName?: string): Promise<void> {
   const store = new ConfigStore(ctx.projectRoot);
@@ -31,17 +30,5 @@ export async function addCommand(ctx: CommandContext, serverName?: string): Prom
   const updatedConfig = store.addServer(result.name, result.config);
   p.log.success(`Server "${result.name}" added to ${store.getDisplayPath()}`);
 
-  const registry = createRegistry();
-  const providers = registry
-    .getByNames(updatedConfig.providers)
-    .filter((provider) => store.scope === 'project' ? provider.config.supportsProjectConfig : provider.config.supportsGlobalConfig);
-  const results = syncAllProviders(providers, ctx.projectRoot, updatedConfig.servers, store.scope);
-
-  for (const r of results) {
-    if (r.status === 'error') {
-      p.log.error(`${r.filePath}: ${r.error}`);
-    } else if (r.status !== 'unchanged') {
-      p.log.success(`Updated: ${r.filePath}`);
-    }
-  }
+  syncConfigProviders(ctx, store, updatedConfig);
 }
